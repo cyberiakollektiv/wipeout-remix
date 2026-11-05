@@ -193,8 +193,8 @@ void render_init(vec2i_t init_screen_size) {
     create_buffer(sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY,
                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                  &vertex_buffer, &vertex_buffer_memory);
-    vkMapMemory(vk.device, vertex_buffer_memory, 0, sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY, 0, &vertex_buffer_mapped);
+                  &vk.vertex_buffer, &vk.vertex_buffer_memory);
+    vkMapMemory(vk.device, vk.vertex_buffer_memory, 0, sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY, 0, &vk.vertex_buffer_mapped);
 
     // 3. Create Atlas Texture
     uint32_t tw = ATLAS_SIZE * ATLAS_GRID;
@@ -237,8 +237,8 @@ void render_init(vec2i_t init_screen_size) {
 }
 
 void render_cleanup(void) {
-    vkDestroyBuffer(vk.device, vertex_buffer, NULL);
-    vkFreeMemory(vk.device, vertex_buffer_memory, NULL);
+    vkDestroyBuffer(vk.device, vk.vertex_buffer, NULL);
+    vkFreeMemory(vk.device, vk.vertex_buffer_memory, NULL);
     vkDestroyImage(vk.device, vk.atlas_image, NULL);
     vkFreeMemory(vk.device, vk.atlas_image_memory, NULL);
 }
@@ -256,10 +256,9 @@ static mat4_t render_setup_2d_projection_mat(vec2i_t size) {
     float lr = 1 / (left - right);
     float bt = 1 / (bottom - top);
     float nf = 1 / (near - far);
-    // Note: Vulkan NDC has inverted Y coordinates compared to OpenGL
     return mat4(
         -2 * lr,  0,  0,  0,
-        0,  2 * bt,  0,  0, // Adjusted Y inversion for Vulkan clip space
+        0,  2 * bt,  0,  0, 
         0,        0,  2 * nf,    0, 
         (left + right) * lr, (top + bottom) * bt, (far + near) * nf, 1
     );
@@ -272,7 +271,7 @@ static mat4_t render_setup_3d_projection_mat(vec2i_t size) {
     float nf = 1.0 / (NEAR_PLANE - FAR_PLANE);
     mat4_t m = mat4(
         f / aspect, 0, 0, 0,
-        0, -f, 0, 0, // Invert Y for Vulkan
+        0, -f, 0, 0, 
         0, 0, FAR_PLANE * nf, -1, 
         0, 0, FAR_PLANE * NEAR_PLANE * nf, 0
     );
@@ -293,7 +292,7 @@ void render_set_resolution(render_resolution_t res) {
         float aspect = (float)screen_size.x / (float)screen_size.y;
         if (res == RENDER_RES_240P) backbuffer_size = vec2i(240.0 * aspect, 240);
         else if (res == RENDER_RES_480P) backbuffer_size = vec2i(480.0 * aspect, 480);
-        else die("Invalid resolution: %d", res);
+        else die("Invalid resolution: %d", (int)res);
     }
 
     projection_mat_2d = render_setup_2d_projection_mat(backbuffer_size);
@@ -329,8 +328,7 @@ void render_flush(void) {
     running_stats.num_tris += tris_len;
     running_stats.num_draw_calls++;
 
-    memcpy((char*)vk.vertex_buffer_mapped + (0 /* streaming offset tracking */), 
-           tris_buffer, sizeof(tris_t) * tris_len);
+    memcpy((char*)vk.vertex_buffer_mapped, tris_buffer, sizeof(tris_t) * tris_len);
 
     tris_len = 0;
 }
@@ -445,7 +443,6 @@ vec2i_t render_texture_size(uint16_t texture_index) {
 
 void render_texture_replace_pixels(int16_t texture_index, rgba_t *pixels) {
     error_if(texture_index >= textures_len, "Invalid texture %d", texture_index);
-    render_texture_t *t = &textures[texture_index];
 }
 
 uint16_t render_textures_len(void) { return textures_len; }
