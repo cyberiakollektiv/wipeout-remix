@@ -12,8 +12,8 @@ static SDL_Window *window;
 static SDL_AudioStream *audio_stream;
 static SDL_Gamepad *gamepad;
 static void (*audio_callback)(float *buffer, uint32_t len) = NULL;
-static char *path_assets = "";
-static char *path_userdata = "";
+static const char *path_assets = "";
+static const char *path_userdata = "";
 static char *temp_path = NULL;
 
 #ifdef __APPLE__
@@ -25,10 +25,10 @@ static char *temp_path = NULL;
 
 
 uint8_t platform_sdl_gamepad_map[] = {
-    [SDL_GAMEPAD_BUTTON_A] = INPUT_GAMEPAD_A,
-    [SDL_GAMEPAD_BUTTON_B] = INPUT_GAMEPAD_B,
-    [SDL_GAMEPAD_BUTTON_X] = INPUT_GAMEPAD_X,
-    [SDL_GAMEPAD_BUTTON_Y] = INPUT_GAMEPAD_Y,
+    [SDL_GAMEPAD_BUTTON_SOUTH] = INPUT_GAMEPAD_A,
+    [SDL_GAMEPAD_BUTTON_EAST] = INPUT_GAMEPAD_B,
+    [SDL_GAMEPAD_BUTTON_WEST] = INPUT_GAMEPAD_X,
+    [SDL_GAMEPAD_BUTTON_NORTH] = INPUT_GAMEPAD_Y,
     [SDL_GAMEPAD_BUTTON_BACK] = INPUT_GAMEPAD_SELECT,
     [SDL_GAMEPAD_BUTTON_GUIDE] = INPUT_GAMEPAD_HOME,
     [SDL_GAMEPAD_BUTTON_START] = INPUT_GAMEPAD_START,
@@ -97,7 +97,7 @@ void platform_pump_events(void) {
                 int code_internal = code - SDL_SCANCODE_LCTRL + INPUT_KEY_LCTRL;
                 input_set_button_state(code_internal, state);
             }
-            else if (code > 0 && code < INPUT_KEY_MAX) {
+            else if ((int)code > 0 && (int)code < INPUT_KEY_MAX) {
                 input_set_button_state(code, state);
             }
         }
@@ -229,7 +229,6 @@ void platform_set_fullscreen(bool fullscreen) {
 
 static void SDLCALL platform_audio_stream_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount) {
     if (audio_callback) {
-        // additional_amount is in bytes, convert to float buffer length
         int num_floats = additional_amount / sizeof(float);
         float *buffer = SDL_malloc(additional_amount);
         if (buffer) {
@@ -349,7 +348,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
 
     void platform_end_frame(void) {
         screenbuffer_pixels = NULL;
-        SDL_UnlockTexture(screenbuffer, NULL); // SDL3 unlock takes rect pointer or NULL
+        SDL_UnlockTexture(screenbuffer);
         SDL_RenderTexture(renderer, screenbuffer, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
@@ -377,12 +376,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Figure out the absolute asset and userdata paths. These may either be
-    // supplied at build time through -DPATH_ASSETS=.. and -DPATH_USERDATA=..
-    // or received at runtime from SDL. Note that SDL may return NULL for these.
-    // We fall back to the current directory (i.e. just "") in this case.
-
-    char *sdl_path_assets = NULL;
+    const char *sdl_path_assets = NULL;
     #ifdef PATH_ASSETS
         path_assets = TOSTRING(PATH_ASSETS);
     #else
@@ -392,7 +386,7 @@ int main(int argc, char *argv[]) {
         }
     #endif
 
-    char *sdl_path_userdata = NULL;
+    const char *sdl_path_userdata = NULL;
     #ifdef PATH_USERDATA
         path_userdata = TOSTRING(PATH_USERDATA);
     #else
@@ -402,11 +396,8 @@ int main(int argc, char *argv[]) {
         }
     #endif
 
-    // Reserve some space for concatenating the asset and userdata paths with
-    // local filenames.
     temp_path = mem_bump(max(strlen(path_assets), strlen(path_userdata)) + 64);
 
-    // Load gamecontrollerdb.txt if present.
     char *gcdb_path = strcat(strcpy(temp_path, path_assets), "gamecontrollerdb.txt");
     bool gcdb_res = SDL_AddGamepadMappingsFromFile(gcdb_path);
     if (!gcdb_res) {
@@ -469,10 +460,10 @@ int main(int argc, char *argv[]) {
     }
 
     if (sdl_path_assets) {
-        SDL_free(sdl_path_assets);
+        SDL_free((void *)sdl_path_assets);
     }
     if (sdl_path_userdata) {
-        SDL_free(sdl_path_userdata);
+        SDL_free((void *)sdl_path_userdata);
     }
 
     if (audio_stream) {
