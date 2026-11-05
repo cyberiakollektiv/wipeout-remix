@@ -228,7 +228,7 @@ void render_init_surface(SDL_Window *window) {
         .surface = vk.surface,
         .minImageCount = vk.swapchain_image_count,
         .imageFormat = vk.swapchain_image_format,
-        .imageColorSpace = VK_COLOR_SPACE_SRGB_NON_LINEAR_KHR,
+        .imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
         .imageExtent = vk.swapchain_extent,
         .imageArrayLayers = 1,
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -266,7 +266,7 @@ void render_init_surface(SDL_Window *window) {
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
     };
@@ -465,7 +465,7 @@ void render_frame_end(void) {
     vkEndCommandBuffer(vk.command_buffer);
 
     VkSemaphore wait_semaphores[] = { vk.image_available_semaphore };
-    VkPipelineStageStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     VkSemaphore signal_semaphores[] = { vk.render_finished_semaphore };
 
     VkSubmitInfo submit_info = {
