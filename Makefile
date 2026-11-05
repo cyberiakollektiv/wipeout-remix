@@ -25,7 +25,7 @@ else ifeq ($(RENDERER), SOFTWARE)
 	RENDERER_SRC = src/render_software.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_SOFTWARE
 else ifeq ($(RENDERER), VK)
-	RENDERER_SRC = render_vk.c
+	RENDERER_SRC = src/render_vk.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_VK
 else
 $(error Unknown RENDERER)
