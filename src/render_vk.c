@@ -1,3 +1,5 @@
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 #include <stb_image_write.h>
 #include <string.h>
@@ -36,24 +38,25 @@ typedef struct {
     VkDevice device;
     VkQueue graphics_queue;
     uint32_t queue_family_index;
-    VkCommandPool command_pool;
-    VkCommandBuffer command_buffer;
     
-    // Swapchain & Offscreen
+    VkSurfaceKHR surface;
     VkSwapchainKHR swapchain;
     VkImage *swapchain_images;
     VkImageView *swapchain_image_views;
     uint32_t swapchain_image_count;
+    VkFormat swapchain_image_format;
+    VkExtent2D swapchain_extent;
+
+    VkRenderPass render_pass;
+    VkFramebuffer *framebuffers;
+
+    VkCommandPool command_pool;
+    VkCommandBuffer command_buffer;
     
-    // Backbuffer / Offscreen Render Target
-    VkImage offscreen_image;
-    VkDeviceMemory offscreen_image_memory;
-    VkImageView offscreen_image_view;
-    VkImage depth_image;
-    VkDeviceMemory depth_image_memory;
-    VkImageView depth_image_view;
-    VkFramebuffer offscreen_framebuffer;
-    VkRenderPass offscreen_render_pass;
+    VkSemaphore image_available_semaphore;
+    VkSemaphore render_finished_semaphore;
+    VkFence in_flight_fence;
+    uint32_t current_image_index;
 
     // Atlas Texture
     VkImage atlas_image;
@@ -66,40 +69,12 @@ typedef struct {
     VkDeviceMemory vertex_buffer_memory;
     void *vertex_buffer_mapped;
 
-    // Descriptor Pools & Layouts
-    VkDescriptorPool descriptor_pool;
-    VkDescriptorSetLayout descriptor_set_layout;
-    VkPipelineLayout pipeline_layout;
-
     // Pipelines
+    VkPipelineLayout pipeline_layout;
     VkPipeline pipeline_game;
-    VkPipeline pipeline_post_default;
-    VkPipeline pipeline_post_crt;
-    VkPipeline current_pipeline;
 } vk_context_t;
 
 static vk_context_t vk;
-
-// Uniform Buffer Structures matching shader expectations
-typedef struct {
-    mat4_t view;
-    mat4_t model;
-    mat4_t projection;
-    vec2_t screen;
-    float padding1[2];
-    vec3_t camera_pos;
-    float padding2;
-    vec2_t fade;
-    float time;
-    float padding3;
-} game_ubo_t;
-
-typedef struct {
-    mat4_t projection;
-    vec2_t screen_size;
-    float time;
-    float padding;
-} post_ubo_t;
 
 static tris_t tris_buffer[RENDER_TRIS_BUFFER_CAPACITY];
 static uint32_t tris_len = 0;
@@ -122,6 +97,7 @@ static bool texture_mipmap_is_dirty = false;
 
 static render_resolution_t render_res;
 render_post_effect_t current_post_effect = RENDER_POST_NONE;
+
 static render_stats_t running_stats = {0};
 static render_stats_t end_stats = {0};
 
@@ -165,44 +141,33 @@ static void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryP
 }
 
 // -----------------------------------------------------------------------------
-// Shader Spir-V Binary Code Generation (Embedded or compiled via glslang)
-// In practice, compile GLSL vertex/fragment shaders to SPIR-V binaries (.spv)
+// Initialization & Core Setup called from SDL3 Platform Surface
 
-static VkShaderModule create_shader_module(const uint32_t* code, size_t size) {
-    VkShaderModuleCreateInfo create_info = {
-        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-        .codeSize = size,
-        .pCode = code
-    };
-    VkShaderModule shader_module;
-    error_if(vkCreateShaderModule(vk.device, &create_info, NULL, &shader_module) != VK_SUCCESS, "Failed to create shader module");
-    return shader_module;
-}
-
-// -----------------------------------------------------------------------------
-// Initialization & Core Setup
-
-void render_init(vec2i_t init_screen_size) {
-    screen_size = init_screen_size;
-
-    // 1. Initialize Vulkan Instance, Physical Device, and Logical Device
+void render_init_surface(SDL_Window *window) {
+    // 1. Create Vulkan Instance
     VkApplicationInfo app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Wipeout Rewrite",
         .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "No Engine",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
         .apiVersion = VK_API_VERSION_1_0
     };
 
+    Uint32 sdl_extension_count = 0;
+    const char *const *sdl_extensions = SDL_Vulkan_GetInstanceExtensions(&sdl_extension_count);
+
     VkInstanceCreateInfo create_info = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pApplicationInfo = &app_info
+        .pApplicationInfo = &app_info,
+        .enabledExtensionCount = sdl_extension_count,
+        .ppEnabledExtensionNames = sdl_extensions
     };
 
     error_if(vkCreateInstance(&create_info, NULL, &vk.instance) != VK_SUCCESS, "Failed to create Vulkan instance");
 
-    // Pick first available physical device
+    // 2. Create Window Surface via SDL3
+    error_if(!SDL_Vulkan_CreateSurface(window, vk.instance, NULL, &vk.surface), "Failed to create Vulkan surface!");
+
+    // 3. Pick Physical Device & Queue Family
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(vk.instance, &device_count, NULL);
     error_if(device_count == 0, "Failed to find GPUs with Vulkan support!");
@@ -211,7 +176,6 @@ void render_init(vec2i_t init_screen_size) {
     vkEnumeratePhysicalDevices(vk.instance, &device_count, devices);
     vk.physical_device = devices[0];
 
-    // Find graphics queue family
     uint32_t queue_family_count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(vk.physical_device, &queue_family_count, NULL);
     VkQueueFamilyProperties queue_families[16];
@@ -219,12 +183,15 @@ void render_init(vec2i_t init_screen_size) {
 
     vk.queue_family_index = 0;
     for (uint32_t i = 0; i < queue_family_count; i++) {
-        if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        VkBool32 present_support = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(vk.physical_device, i, vk.surface, &present_support);
+        if ((queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && present_support) {
             vk.queue_family_index = i;
             break;
         }
     }
 
+    // 4. Create Logical Device
     float queue_priority = 1.0f;
     VkDeviceQueueCreateInfo queue_create_info = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -233,52 +200,142 @@ void render_init(vec2i_t init_screen_size) {
         .pQueuePriorities = &queue_priority
     };
 
+    const char *device_extensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     VkDeviceCreateInfo device_create_info = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queue_create_info
+        .pQueueCreateInfos = &queue_create_info,
+        .enabledExtensionCount = 1,
+        .ppEnabledExtensionNames = device_extensions
     };
 
     error_if(vkCreateDevice(vk.physical_device, &device_create_info, NULL, &vk.device) != VK_SUCCESS, "Failed to create logical Vulkan device!");
     vkGetDeviceQueue(vk.device, vk.queue_family_index, 0, &vk.graphics_queue);
 
-    // 2. Vertex Buffer Setup (Dynamic streaming vertex buffer)
+    // 5. Create Swapchain
+    VkSurfaceCapabilitiesKHR capabilities;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vk.physical_device, vk.surface, &capabilities);
+    
+    vk.swapchain_image_format = VK_FORMAT_B8G8R8A8_UNORM;
+    vk.swapchain_extent = capabilities.currentExtent;
+    vk.swapchain_image_count = capabilities.minImageCount + 1;
+    if (capabilities.maxImageCount > 0 && vk.swapchain_image_count > capabilities.maxImageCount) {
+        vk.swapchain_image_count = capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR swapchain_info = {
+        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .surface = vk.surface,
+        .minImageCount = vk.swapchain_image_count,
+        .imageFormat = vk.swapchain_image_format,
+        .imageColorSpace = VK_COLOR_SPACE_SRGB_NON_LINEAR_KHR,
+        .imageExtent = vk.swapchain_extent,
+        .imageArrayLayers = 1,
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+        .preTransform = capabilities.currentTransform,
+        .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        .presentMode = VK_PRESENT_MODE_FIFO_KHR,
+        .clipped = VK_TRUE
+    };
+
+    error_if(vkCreateSwapchainKHR(vk.device, &swapchain_info, NULL, &vk.swapchain) != VK_SUCCESS, "Failed to create swapchain!");
+
+    vkGetSwapchainImagesKHR(vk.device, vk.swapchain, &vk.swapchain_image_count, NULL);
+    vk.swapchain_images = malloc(sizeof(VkImage) * vk.swapchain_image_count);
+    vkGetSwapchainImagesKHR(vk.device, vk.swapchain, &vk.swapchain_image_count, vk.swapchain_images);
+
+    // 6. Swapchain Image Views
+    vk.swapchain_image_views = malloc(sizeof(VkImageView) * vk.swapchain_image_count);
+    for (uint32_t i = 0; i < vk.swapchain_image_count; i++) {
+        VkImageViewCreateInfo view_info = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .image = vk.swapchain_images[i],
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = vk.swapchain_image_format,
+            .components = { VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY },
+            .subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 }
+        };
+        error_if(vkCreateImageView(vk.device, &view_info, NULL, &vk.swapchain_image_views[i]) != VK_SUCCESS, "Failed to create image view!");
+    }
+
+    // 7. Render Pass
+    VkAttachmentDescription color_attachment = {
+        .format = vk.swapchain_image_format,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+    };
+
+    VkAttachmentReference color_attachment_ref = { .attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+    VkSubpassDescription subpass = {
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &color_attachment_ref
+    };
+
+    VkRenderPassCreateInfo render_pass_info = {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = 1,
+        .pAttachments = &color_attachment,
+        .subpassCount = 1,
+        .pSubpasses = &subpass
+    };
+    error_if(vkCreateRenderPass(vk.device, &render_pass_info, NULL, &vk.render_pass) != VK_SUCCESS, "Failed to create render pass!");
+
+    // 8. Framebuffers
+    vk.framebuffers = malloc(sizeof(VkFramebuffer) * vk.swapchain_image_count);
+    for (uint32_t i = 0; i < vk.swapchain_image_count; i++) {
+        VkFramebufferCreateInfo fb_info = {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = vk.render_pass,
+            .attachmentCount = 1,
+            .pAttachments = &vk.swapchain_image_views[i],
+            .width = vk.swapchain_extent.width,
+            .height = vk.swapchain_extent.height,
+            .layers = 1
+        };
+        error_if(vkCreateFramebuffer(vk.device, &fb_info, NULL, &vk.framebuffers[i]) != VK_SUCCESS, "Failed to create framebuffer!");
+    }
+
+    // 9. Command Pool & Buffer
+    VkCommandPoolCreateInfo pool_info = {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = vk.queue_family_index
+    };
+    error_if(vkCreateCommandPool(vk.device, &pool_info, NULL, &vk.command_pool) != VK_SUCCESS, "Failed to create command pool!");
+
+    VkCommandBufferAllocateInfo alloc_info = {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .commandPool = vk.command_pool,
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .commandBufferCount = 1
+    };
+    vkAllocateCommandBuffers(vk.device, &alloc_info, &vk.command_buffer);
+
+    // 10. Sync Objects
+    VkSemaphoreCreateInfo sem_info = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+    VkFenceCreateInfo fence_info = { .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .flags = VK_FENCE_CREATE_SIGNALED_BIT };
+    vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.image_available_semaphore);
+    vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.render_finished_semaphore);
+    vkCreateFence(vk.device, &fence_info, NULL, &vk.in_flight_fence);
+}
+
+void render_init(vec2i_t init_screen_size) {
+    screen_size = init_screen_size;
+
+    // Vertex Buffer Setup (Dynamic host coherent)
     create_buffer(sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY,
                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                   &vk.vertex_buffer, &vk.vertex_buffer_memory);
     vkMapMemory(vk.device, vk.vertex_buffer_memory, 0, sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY, 0, &vk.vertex_buffer_mapped);
 
-    // 3. Create Atlas Texture
-    uint32_t tw = ATLAS_SIZE * ATLAS_GRID;
-    uint32_t th = ATLAS_SIZE * ATLAS_GRID;
-    
-    VkImageCreateInfo image_info = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-        .imageType = VK_IMAGE_TYPE_2D,
-        .extent = {tw, th, 1},
-        .mipLevels = 1,
-        .arrayLayers = 1,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .tiling = VK_IMAGE_TILING_OPTIMAL,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-    };
-    vkCreateImage(vk.device, &image_info, NULL, &vk.atlas_image);
-
-    VkMemoryRequirements mem_reqs;
-    vkGetImageMemoryRequirements(vk.device, vk.atlas_image, &mem_reqs);
-    VkMemoryAllocateInfo alloc_info = {
-        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        .allocationSize = mem_reqs.size,
-        .memoryTypeIndex = find_memory_type(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-    };
-    vkAllocateMemory(vk.device, &alloc_info, NULL, &vk.atlas_image_memory);
-    vkBindImageMemory(vk.device, vk.atlas_image, vk.atlas_image_memory, 0);
-
-    // Create White Texture Default
     rgba_t white_pixels[4] = {
         rgba(128,128,128,255), rgba(128,128,128,255),
         rgba(128,128,128,255), rgba(128,128,128,255)
@@ -290,10 +347,22 @@ void render_init(vec2i_t init_screen_size) {
 }
 
 void render_cleanup(void) {
+    vkDeviceWaitIdle(vk.device);
     vkDestroyBuffer(vk.device, vk.vertex_buffer, NULL);
     vkFreeMemory(vk.device, vk.vertex_buffer_memory, NULL);
-    vkDestroyImage(vk.device, vk.atlas_image, NULL);
-    vkFreeMemory(vk.device, vk.atlas_image_memory, NULL);
+    vkDestroySemaphore(vk.device, vk.image_available_semaphore, NULL);
+    vkDestroySemaphore(vk.device, vk.render_finished_semaphore, NULL);
+    vkDestroyFence(vk.device, vk.in_flight_fence, NULL);
+    vkDestroyCommandPool(vk.device, vk.command_pool, NULL);
+    for (uint32_t i = 0; i < vk.swapchain_image_count; i++) {
+        vkDestroyFramebuffer(vk.device, vk.framebuffers[i], NULL);
+        vkDestroyImageView(vk.device, vk.swapchain_image_views[i], NULL);
+    }
+    vkDestroySwapchainKHR(vk.device, vk.swapchain, NULL);
+    vkDestroyRenderPass(vk.device, vk.render_pass, NULL);
+    vkDestroyDevice(vk.device, NULL);
+    vkDestroySurfaceKHR(vk.instance, vk.surface, NULL);
+    vkDestroyInstance(vk.instance, NULL);
 }
 
 // -----------------------------------------------------------------------------
@@ -345,7 +414,9 @@ void render_set_resolution(render_resolution_t res) {
         float aspect = (float)screen_size.x / (float)screen_size.y;
         if (res == RENDER_RES_240P) backbuffer_size = vec2i(240.0 * aspect, 240);
         else if (res == RENDER_RES_480P) backbuffer_size = vec2i(480.0 * aspect, 480);
-        else die("Invalid resolution: %d", (int)res);
+        else {
+            die("Invalid resolution: %d", (int)res);
+        }
     }
 
     projection_mat_2d = render_setup_2d_projection_mat(backbuffer_size);
@@ -364,10 +435,63 @@ vec2i_t render_size(void) {
 void render_frame_prepare(void) {
     running_stats.num_tris = 0;
     running_stats.num_draw_calls = 0;
+
+    vkWaitForFences(vk.device, 1, &vk.in_flight_fence, VK_TRUE, UINT64_MAX);
+    vkAcquireNextImageKHR(vk.device, vk.swapchain, UINT64_MAX, vk.image_available_semaphore, VK_NULL_HANDLE, &vk.current_image_index);
+    vkResetFences(vk.device, 1, &vk.in_flight_fence);
+
+    vkResetCommandBuffer(vk.command_buffer, 0);
+    VkCommandBufferBeginInfo begin_info = { .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+    vkBeginCommandBuffer(vk.command_buffer, &begin_info);
+
+    VkClearValue clear_color = {{{ 0.0f, 0.0f, 0.0f, 1.0f }}};
+    VkRenderPassBeginInfo render_pass_info = {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = vk.render_pass,
+        .framebuffer = vk.framebuffers[vk.current_image_index],
+        .renderArea.offset = {0, 0},
+        .renderArea.extent = vk.swapchain_extent,
+        .clearValueCount = 1,
+        .pClearValues = &clear_color
+    };
+
+    vkCmdBeginRenderPass(vk.command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void render_frame_end(void) {
     render_flush();
+
+    vkCmdEndRenderPass(vk.command_buffer);
+    vkEndCommandBuffer(vk.command_buffer);
+
+    VkSemaphore wait_semaphores[] = { vk.image_available_semaphore };
+    VkPipelineStageStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    VkSemaphore signal_semaphores[] = { vk.render_finished_semaphore };
+
+    VkSubmitInfo submit_info = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = wait_semaphores,
+        .pWaitDstStageMask = wait_stages,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &vk.command_buffer,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = signal_semaphores
+    };
+
+    error_if(vkQueueSubmit(vk.graphics_queue, 1, &submit_info, vk.in_flight_fence) != VK_SUCCESS, "Failed to submit draw command buffer!");
+
+    VkPresentInfoKHR present_info = {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = signal_semaphores,
+        .swapchainCount = 1,
+        .pSwapchains = &vk.swapchain,
+        .pImageIndices = &vk.current_image_index
+    };
+
+    vkQueuePresentKHR(vk.graphics_queue, &present_info);
+
     memcpy(&end_stats, &running_stats, sizeof(render_stats_t));
 }
 
@@ -382,6 +506,11 @@ void render_flush(void) {
     running_stats.num_draw_calls++;
 
     memcpy((char*)vk.vertex_buffer_mapped, tris_buffer, sizeof(tris_t) * tris_len);
+    
+    // Bind vertex buffer and draw
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(vk.command_buffer, 0, 1, &vk.vertex_buffer, offsets);
+    vkCmdDraw(vk.command_buffer, tris_len * 3, 1, 0, 0);
 
     tris_len = 0;
 }
@@ -395,14 +524,8 @@ void render_set_view(vec3_t pos, vec3_t angles) {
     mat4_set_yaw_pitch_roll(&sprite_mat, vec3(-angles.x, angles.y - M_PI, 0));
 }
 
-void render_set_view_2d(void) {
-    render_flush();
-}
-
-void render_set_model_mat(mat4_t *m) {
-    render_flush();
-}
-
+void render_set_view_2d(void) { render_flush(); }
+void render_set_model_mat(mat4_t *m) { render_flush(); }
 void render_set_depth_write(bool enabled) { render_flush(); }
 void render_set_depth_test(bool enabled) { render_flush(); }
 void render_set_depth_offset(float offset) { render_flush(); }
@@ -511,5 +634,4 @@ void render_textures_reset(uint16_t len) {
     }
 }
 
-void render_textures_dump(const char *path) {
-}
+void render_textures_dump(const char *path) {}
