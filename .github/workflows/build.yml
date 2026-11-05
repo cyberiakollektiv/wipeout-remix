@@ -15,18 +15,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies (SDL3, OpenGL & GLEW)
+      - name: Install system dependencies (OpenGL & GLEW)
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
             pkg-config \
-            libsdl3-dev \
             libgl1-mesa-dev \
             libglew-dev
 
+      - name: Setup SDL3
+        uses: libsdl-org/setup-sdl@main
+        id: sdl
+        with:
+          version: 3-latest
+          install-linux-dependencies: true
+
       - name: Build with Makefile
         run: |
+          # Expose the action's installed SDL3 path to pkg-config so the Makefile finds it
+          export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
           make clean
           make -j$(nproc)
 
