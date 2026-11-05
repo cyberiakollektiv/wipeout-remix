@@ -1,3 +1,21 @@
+# wipEout Reworked
+A revamped wipeout-rewrite engine in SDL3 with additional QoL features.
+
+# Working:
+- [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
+- [x] Modified menu assets for ease of navigation, including bugfixes
+
+# Planned:
+- [x] Vibration (requires linking to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
+- [ ] Demo(?)
+- [ ] Include ship alpha bleed and mine light fixes from mainline PRs
+- [ ] Custom soundtrack support
+- [ ] Wipeout 2097 + 3 soundtrack support
+- [ ] Wipeout 2097 track support in single races
+
+Original README below.
+
+
 # wipEout Rewrite
 
 This is a re-implementation of the 1995 PSX game wipEout.
