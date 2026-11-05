@@ -121,8 +121,7 @@ static uint32_t textures_len = 0;
 static bool texture_mipmap_is_dirty = false;
 
 static render_resolution_t render_res;
-prg_post_effect_t current_post_effect = RENDER_POST_NONE;
-
+render_post_effect_t current_post_effect = RENDER_POST_NONE;
 static render_stats_t running_stats = {0};
 static render_stats_t end_stats = {0};
 
