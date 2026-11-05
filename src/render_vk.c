@@ -185,8 +185,62 @@ static VkShaderModule create_shader_module(const uint32_t* code, size_t size) {
 void render_init(vec2i_t init_screen_size) {
     screen_size = init_screen_size;
 
-    // 1. Create Vulkan Instance & Device (Boilerplate initializations omitted for brevity)
-    // Assumes vk.instance, vk.physical_device, vk.device, vk.graphics_queue initialized.
+    // 1. Initialize Vulkan Instance, Physical Device, and Logical Device
+    VkApplicationInfo app_info = {
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pApplicationName = "Wipeout Rewrite",
+        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+        .pEngineName = "No Engine",
+        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+        .apiVersion = VK_API_VERSION_1_0
+    };
+
+    VkInstanceCreateInfo create_info = {
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pApplicationInfo = &app_info
+    };
+
+    error_if(vkCreateInstance(&create_info, NULL, &vk.instance) != VK_SUCCESS, "Failed to create Vulkan instance");
+
+    // Pick first available physical device
+    uint32_t device_count = 0;
+    vkEnumeratePhysicalDevices(vk.instance, &device_count, NULL);
+    error_if(device_count == 0, "Failed to find GPUs with Vulkan support!");
+    
+    VkPhysicalDevice devices[16];
+    vkEnumeratePhysicalDevices(vk.instance, &device_count, devices);
+    vk.physical_device = devices[0];
+
+    // Find graphics queue family
+    uint32_t queue_family_count = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(vk.physical_device, &queue_family_count, NULL);
+    VkQueueFamilyProperties queue_families[16];
+    vkGetPhysicalDeviceQueueFamilyProperties(vk.physical_device, &queue_family_count, queue_families);
+
+    vk.queue_family_index = 0;
+    for (uint32_t i = 0; i < queue_family_count; i++) {
+        if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            vk.queue_family_index = i;
+            break;
+        }
+    }
+
+    float queue_priority = 1.0f;
+    VkDeviceQueueCreateInfo queue_create_info = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .queueFamilyIndex = vk.queue_family_index,
+        .queueCount = 1,
+        .pQueuePriorities = &queue_priority
+    };
+
+    VkDeviceCreateInfo device_create_info = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queue_create_info
+    };
+
+    error_if(vkCreateDevice(vk.physical_device, &device_create_info, NULL, &vk.device) != VK_SUCCESS, "Failed to create logical Vulkan device!");
+    vkGetDeviceQueue(vk.device, vk.queue_family_index, 0, &vk.graphics_queue);
 
     // 2. Vertex Buffer Setup (Dynamic streaming vertex buffer)
     create_buffer(sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY,
