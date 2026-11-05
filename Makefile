@@ -46,6 +46,7 @@ ifeq ($(UNAME_S), Darwin)
 	endif
 
 	L_FLAGS_SDL = -lSDL2
+	L_FLAGS_SDL3 = $(shell pkg-config --libs sdl3)
 	L_FLAGS_SOKOL = -framework Cocoa -framework QuartzCore -framework AudioToolbox
 
 
@@ -64,6 +65,7 @@ else ifeq ($(UNAME_S), Linux)
 	endif
 
 	L_FLAGS_SDL = -lSDL2
+	L_FLAGS_SDL3 = $(shell pkg-config --libs sdl3)
 	L_FLAGS_SOKOL = -lX11 -lXcursor -pthread -lXi -ldl -lasound
 
 
@@ -75,6 +77,7 @@ else ifeq ($(shell uname -o), Msys)
 
 	C_FLAGS := $(C_FLAGS) -DSDL_MAIN_HANDLED
 	L_FLAGS_SDL := $(shell sdl2-config --libs)
+	L_FLAGS_SDL3 = $(shell pkg-config --libs sdl3)
 	L_FLAGS_SOKOL = --pthread -lgdi32 -lole32
 
 
@@ -137,6 +140,11 @@ sdl: C_FLAGS += $(shell sdl2-config --cflags)
 sdl: $(BUILD_DIR)/src/platform_sdl.o
 sdl: $(COMMON_OBJ)
 	$(CC) $^ -o $(TARGET_NATIVE) $(L_FLAGS) $(L_FLAGS_SDL)
+
+sdl3: C_FLAGS += $(shell pkg-config --cflags sdl3)
+sdl3: $(BUILD_DIR)/platform_sdl3.o
+sdl3: $(COMMON_OBJ)
+	$(CC) $^ -o $(TARGET_NATIVE) $(L_FLAGS) $(L_FLAGS_SDL3)
 
 sokol: $(BUILD_DIR)/src/platform_sokol.o
 sokol: $(COMMON_OBJ)
