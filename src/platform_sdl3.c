@@ -313,6 +313,30 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
         return vec2i(width, height);
     }
 
+#elif defined(RENDERER_VK) // ---------------------------------------------------
+    #define PLATFORM_WINDOW_FLAGS 0
+
+    void platform_video_init(void) {
+        // Vulkan surface initialized via renderer / window handle
+    }
+
+    void platform_prepare_frame(void) {
+        render_frame_prepare();
+    }
+
+    void platform_video_cleanup(void) {
+        // Vulkan cleanup handled in renderer
+    }
+
+    void platform_end_frame(void) {
+        render_frame_end();
+    }
+
+    vec2i_t platform_screen_size(void) {
+        int width, height;
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        return vec2i(width, height);
+    }
 
 #elif defined(RENDERER_SOFTWARE) || defined(RENDERER_NULL)// -------------------
     #define PLATFORM_WINDOW_FLAGS 0
