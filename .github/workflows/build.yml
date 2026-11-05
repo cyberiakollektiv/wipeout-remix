@@ -1,4 +1,4 @@
-name: Build wipeout-reworked (SDL3 + OpenGL)
+name: Build wipeout-rework (SDL3 + OpenGL)
 
 on:
   push:
@@ -24,22 +24,22 @@ jobs:
             libgl1-mesa-dev \
             libglew-dev
 
-      - name: Setup SDL3
+      - name: Setup SDL3 from source
         uses: libsdl-org/setup-sdl@main
         id: sdl
         with:
           version: 3-latest
           install-linux-dependencies: true
 
-      - name: Build with Makefile
+      - name: Build with Makefile (SDL3 target)
         run: |
-          # Expose the action's installed SDL3 path to pkg-config so the Makefile finds it
+          # Expose compiled SDL3 to pkg-config so the Makefile finds it
           export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
           make clean
-          make -j$(nproc)
+          make sdl3 -j$(nproc)
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wipegame-opengl-sdl3
+          name: wipegame-sdl3-opengl
           path: wipegame
