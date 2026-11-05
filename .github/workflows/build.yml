@@ -1,0 +1,37 @@
+name: Build wipeout-reworked (SDL3 + OpenGL)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (SDL3, OpenGL & GLEW)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libsdl3-dev \
+            libgl1-mesa-dev \
+            libglew-dev
+
+      - name: Build with Makefile
+        run: |
+          make clean
+          make -j$(nproc)
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wipegame-opengl-sdl3
+          path: wipegame
