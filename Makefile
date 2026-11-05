@@ -27,6 +27,7 @@ else ifeq ($(RENDERER), SOFTWARE)
 else ifeq ($(RENDERER), VK)
 	RENDERER_SRC = src/render_vk.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_VK
+	L_FLAGS := $(L_FLAGS) -lvulkan
 else
 $(error Unknown RENDERER)
 endif
