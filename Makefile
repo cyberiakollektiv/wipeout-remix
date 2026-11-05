@@ -142,13 +142,9 @@ sdl: $(COMMON_OBJ)
 	$(CC) $^ -o $(TARGET_NATIVE) $(L_FLAGS) $(L_FLAGS_SDL)
 
 sdl3: C_FLAGS += $(shell pkg-config --cflags sdl3)
-sdl3: $(BUILD_DIR)/platform_sdl3.o
+sdl3: $(BUILD_DIR)/src/platform_sdl3.o
 sdl3: $(COMMON_OBJ)
 	$(CC) $^ -o $(TARGET_NATIVE) $(L_FLAGS) $(L_FLAGS_SDL3)
-
-$(BUILD_DIR)/platform_sdl3.o: platform_sdl3.c
-	mkdir -p $(dir $@)
-	$(CC) $(C_FLAGS) -MMD -MP -c $< -o $@
 
 sokol: $(BUILD_DIR)/src/platform_sokol.o
 sokol: $(COMMON_OBJ)
