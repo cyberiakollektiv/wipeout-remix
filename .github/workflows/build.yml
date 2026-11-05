@@ -1,4 +1,4 @@
-name: Build wipeout-rework (SDL3 + OpenGL)
+name: Build wipeout-reworked (SDL3 - GL & VK)
 
 on:
   push:
@@ -10,19 +10,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - renderer: GL
+            artifact_name: wipegame-sdl3-opengl
+          - renderer: VK
+            artifact_name: wipegame-sdl3-vulkan
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install system dependencies (OpenGL & GLEW)
+      - name: Install system dependencies (OpenGL, GLEW & Vulkan)
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
             pkg-config \
             libgl1-mesa-dev \
-            libglew-dev
+            libglew-dev \
+            libvulkan-dev \
+            vulkan-tools
 
       - name: Setup SDL3 from source
         uses: libsdl-org/setup-sdl@main
@@ -35,11 +44,17 @@ jobs:
         run: |
           # Expose compiled SDL3 to pkg-config so the Makefile finds it
           export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
+          
           make clean
-          make sdl3 -j$(nproc)
+          # Pass the renderer parameter to the makefile along with the sdl3 target
+          make sdl3 RENDERER=${{ matrix.renderer }} -j$(nproc)
+
+      - name: Rename binary to avoid overwrite during upload
+        run: |
+          mv wipegame wipegame-${{ matrix.renderer }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wipegame-sdl3-opengl
-          path: wipegame
+          name: ${{ matrix.artifact_name }}
+          path: wipegame-${{ matrix.renderer }}
