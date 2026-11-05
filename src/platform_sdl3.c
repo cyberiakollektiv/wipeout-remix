@@ -5,6 +5,7 @@
 #include "system.h"
 #include "utils.h"
 #include "mem.h"
+#include "render.h"
 
 static uint64_t perf_freq = 0;
 static bool wants_to_exit = false;
