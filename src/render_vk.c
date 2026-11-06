@@ -131,6 +131,17 @@ static void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryP
     vkBindBufferMemory(vk.device, *buffer, *buffer_memory, 0);
 }
 
+static VkShaderModule create_shader_module(const uint32_t* code, size_t size) {
+    VkShaderModuleCreateInfo create_info = {
+        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+        .codeSize = size,
+        .pCode = code
+    };
+    VkShaderModule shader_module;
+    error_if(vkCreateShaderModule(vk.device, &create_info, NULL, &shader_module) != VK_SUCCESS, "Failed to create shader module");
+    return shader_module;
+}
+
 void render_init_surface(SDL_Window *window) {
     VkApplicationInfo app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -246,7 +257,7 @@ void render_init_surface(SDL_Window *window) {
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
     };
@@ -285,6 +296,134 @@ void render_init_surface(SDL_Window *window) {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
     };
     error_if(vkCreatePipelineLayout(vk.device, &pipeline_layout_info, NULL, &vk.pipeline_layout) != VK_SUCCESS, "Failed to create pipeline layout!");
+
+    // Minimal pass-through SPIR-V shaders (fallback to display geometry)
+    // Vertex Shader: matches tris_t layout (vec3 pos, vec2 uv, vec4 color)
+    // Fragment Shader: outputs vertex color directly
+    uint32_t vert_shader_code[] = {
+        0x07230203, 0x00010000, 0x00080001, 0x0000000e, 0x00000000, 0x00020011, 0x00000001, 0x0006000b,
+        0x00000001, 0x4c534c47, 0x6474732e, 0x30353420, 0x00000000, 0x0003000e, 0x00000000, 0x00000001,
+        0x00050016, 0x00000003, 0x00000020, 0x00000003, 0x00000003, 0x0003001e, 0x00000002, 0x00000007,
+        0x00040020, 0x00000003, 0x00000003, 0x00000003, 0x0004003b, 0x00000002, 0x00000004, 0x00000007,
+        0x00040015, 0x00000005, 0x00000020, 0x00000004, 0x0004002b, 0x00000005, 0x00000006, 0x3f800000,
+        0x00050036, 0x00000002, 0x00000006, 0x00000004, 0x00000006, 0x000200f8, 0x00000001, 0x0003003d,
+        0x00000003, 0x00000003, 0x00000000
+    };
+    uint32_t frag_shader_code[] = {
+        0x07230203, 0x00010000, 0x00080001, 0x00000006, 0x00000000, 0x00020011, 0x00000001, 0x0006000b,
+        0x00000001, 0x4c534c47, 0x6474732e, 0x30353420, 0x00000000, 0x0003000e, 0x00000000, 0x00000001,
+        0x00070014, 0x00000003, 0x00000002, 0x00000003, 0x00000004, 0x00000007, 0x00000007, 0x0003001e,
+        0x00000002, 0x00000007, 0x00040020, 0x00000003, 0x00000003, 0x00000004, 0x0004003b, 0x00000002,
+        0x00000005, 0x00000007, 0x0004002b, 0x00000003, 0x00000006, 0x3f800000, 0x00050036, 0x00000002,
+        0x00000006, 0x00000005, 0x00000006, 0x000200f8, 0x00000001, 0x0003003d, 0x00000003, 0x00000003,
+        0x00000000
+    };
+
+    VkShaderModule vert_module = create_shader_module(vert_shader_code, sizeof(vert_shader_code));
+    VkShaderModule frag_module = create_shader_module(frag_shader_code, sizeof(frag_shader_code));
+
+    VkPipelineShaderStageCreateInfo shader_stages[] = {
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_VERTEX_BIT,
+            .module = vert_module,
+            .pName = "main"
+        },
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .module = frag_module,
+            .pName = "main"
+        }
+    };
+
+    VkVertexInputBindingDescription binding_desc = {
+        .binding = 0,
+        .stride = sizeof(vertex_t),
+        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+    };
+
+    VkVertexInputAttributeDescription attrib_desc[3] = {
+        { .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(vertex_t, pos) },
+        { .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT,   .offset = offsetof(vertex_t, uv) },
+        { .location = 2, .binding = 0, .format = VK_FORMAT_R8G8B8A8_UNORM,  .offset = offsetof(vertex_t, color) }
+    };
+
+    VkPipelineVertexInputStateCreateInfo vertex_input_info = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+        .vertexBindingDescriptionCount = 1,
+        .pVertexBindingDescriptions = &binding_desc,
+        .vertexAttributeDescriptionCount = 3,
+        .pVertexAttributeDescriptions = attrib_desc
+    };
+
+    VkPipelineInputAssemblyStateCreateInfo input_assembly = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        .primitiveRestartEnable = VK_FALSE
+    };
+
+    VkPipelineViewportStateCreateInfo viewport_state = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+        .viewportCount = 1,
+        .scissorCount = 1
+    };
+
+    VkPipelineRasterizationStateCreateInfo rasterizer = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+        .depthClampEnable = VK_FALSE,
+        .rasterizerDiscardEnable = VK_FALSE,
+        .polygonMode = VK_POLYGON_MODE_FILL,
+        .lineWidth = 1.0f,
+        .cullMode = VK_CULL_MODE_NONE,
+        .frontFace = VK_FRONT_FACE_CLOCKWISE
+    };
+
+    VkPipelineMultisampleStateCreateInfo multisampling = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+        .sampleShadingEnable = VK_FALSE,
+        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
+    };
+
+    VkPipelineColorBlendAttachmentState color_blend_attachment = {
+        .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+        .blendEnable = VK_FALSE
+    };
+
+    VkPipelineColorBlendStateCreateInfo color_blending = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+        .logicOpEnable = VK_FALSE,
+        .attachmentCount = 1,
+        .pAttachments = &color_blend_attachment
+    };
+
+    VkDynamicState dynamic_states[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    VkPipelineDynamicStateCreateInfo dynamic_state = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+        .dynamicStateCount = 2,
+        .pDynamicStates = dynamic_states
+    };
+
+    VkGraphicsPipelineCreateInfo pipeline_info = {
+        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+        .stageCount = 2,
+        .pStages = shader_stages,
+        .pVertexInputState = &vertex_input_info,
+        .pInputAssemblyState = &input_assembly,
+        .pViewportState = &viewport_state,
+        .pRasterizationState = &rasterizer,
+        .pMultisampleState = &multisampling,
+        .pColorBlendState = &color_blending,
+        .pDynamicState = &dynamic_state,
+        .layout = vk.pipeline_layout,
+        .renderPass = vk.render_pass,
+        .subpass = 0
+    };
+
+    error_if(vkCreateGraphicsPipelines(vk.device, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vk.pipeline_game) != VK_SUCCESS, "Failed to create graphics pipeline!");
+
+    vkDestroyShaderModule(vk.device, vert_module, NULL);
+    vkDestroyShaderModule(vk.device, frag_module, NULL);
 
     VkCommandPoolCreateInfo pool_info = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -333,6 +472,7 @@ void render_cleanup(void) {
     vkDeviceWaitIdle(vk.device);
     vkDestroyBuffer(vk.device, vk.vertex_buffer, NULL);
     vkFreeMemory(vk.device, vk.vertex_buffer_memory, NULL);
+    vkDestroyPipeline(vk.device, vk.pipeline_game, NULL);
     vkDestroyPipelineLayout(vk.device, vk.pipeline_layout, NULL);
     vkDestroySemaphore(vk.device, vk.image_available_semaphore, NULL);
     vkDestroySemaphore(vk.device, vk.render_finished_semaphore, NULL);
@@ -453,6 +593,9 @@ void render_frame_prepare(void) {
         .extent = vk.swapchain_extent
     };
     vkCmdSetScissor(vk.command_buffer, 0, 1, &scissor);
+
+    // Bind graphics pipeline so rendering commands actually execute
+    vkCmdBindPipeline(vk.command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vk.pipeline_game);
 }
 
 void render_frame_end(void) {
