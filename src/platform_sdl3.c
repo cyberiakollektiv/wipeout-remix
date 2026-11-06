@@ -338,6 +338,41 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
         return vec2i(width, height);
     }
 
+#elif defined(RENDERER_MTL) // ---------------------------------------------------
+    #define PLATFORM_WINDOW_FLAGS SDL_WINDOW_METAL
+
+    static SDL_MetalView metal_view = NULL;
+
+    void platform_video_init(void) {
+        metal_view = SDL_Vulkan_CreateMetalView(window);
+        
+        int width, height;
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        render_init(vec2i(width, height));
+    }
+
+    void platform_prepare_frame(void) {
+        render_frame_prepare();
+    }
+
+    void platform_video_cleanup(void) {
+        render_cleanup();
+        if (metal_view) {
+            SDL_Metal_DestroyView(metal_view);
+            metal_view = NULL;
+        }
+    }
+
+    void platform_end_frame(void) {
+        render_frame_end();
+    }
+
+    vec2i_t platform_screen_size(void) {
+        int width, height;
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        return vec2i(width, height);
+    }
+
 #elif defined(RENDERER_SOFTWARE) || defined(RENDERER_NULL)// -------------------
     #define PLATFORM_WINDOW_FLAGS 0
     static SDL_Renderer *renderer;
