@@ -2,7 +2,9 @@
 A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL features such as vibration, console-specific game menus, and more.
 
 ## Why SDL3?
-It slightly modernizes the codebase for future ports to SDL3-compatible systems (such as Android, DOS, Emscripten, FreeBSD, Haiku OS, HarmonyOS/OpenHarmony, iOS, Linux, macOS 10.14 and later, NetBSD, Nintendo Switch and Switch 2, Nintendo 3DS, Nokia N-Gage, OpenBSD, PlayStation 2, PlayStation 4, PlayStation 5, PlayStation Portable, PlayStation Vita, QNX, RISC OS, SteamOS, tvOS, visionOS, Windows, Windows GDK, and Xbox, as well as anything else that you can get SDL3 running on!)
+It slightly modernizes the codebase for future ports to SDL3-compatible systems (such as Android, DOS, Emscripten, FreeBSD, Haiku OS, HarmonyOS/OpenHarmony, iOS, Linux, macOS 10.14 and later, NetBSD, Nintendo Switch and Switch 2, Nintendo 3DS, Nokia N-Gage, OpenBSD, PlayStation 2, PlayStation 4, PlayStation 5, PlayStation Portable, PlayStation Vita, QNX, RISC OS, SteamOS, tvOS, visionOS, Windows, Windows GDK, and Xbox, as well as anything else that you can get SDL3 running on!).
+
+Originally this started as a modification for wipEoutX, an Xbox port that I've been working on, but there were issues with the NXDK version of SDL2 that reduced performance and caused audio jitter that were easily resolved by updating to SDL3. I had also begun working on other modernizations in that engine (vibration, light/alpha fixes) but decided that it made more sense to create a new repository and port that version over to the Xbox instead of the other way around, so people can use these fixes and QoL patches in their own ports. This aims to be a slightly more console-friendly version that feels less like a PC port once ported to other devices. 
 
 # Working:
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
