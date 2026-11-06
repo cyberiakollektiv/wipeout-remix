@@ -10,11 +10,10 @@ A revamped wipeout-rewrite engine in SDL3 with additional QoL features.
 - [ ] Demo(?)
 - [ ] Include ship alpha bleed and mine light fixes from mainline PRs
 - [ ] Custom soundtrack support
-- [ ] Wipeout 2097 + 3 soundtrack support
-- [ ] Wipeout 2097 track support in single races
-- [ ] Remove Sokol files from this fork to focus solely on SDL
-- [ ] Integrate SDL1 patches from wipeout-sdl1(?) so the engine can be compiled on all versions of SDL
-- [ ] Vulkan renderer(?)
+- [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
+- [ ] Wipeout 2097 + 64 track support in single races
+- [ ] Integrate SDL1 patches from wipeout-sdl1 so the engine can be compiled on all versions of SDL(?)
+- [ ] Vulkan/Metal renderers(?)
 
 Original README below.
 
