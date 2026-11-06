@@ -19,6 +19,8 @@
 #include "title.h"
 #include "intro.h"
 
+#include "cJSON.h"
+
 #define TURN_ACCEL(V) NTSC_ACCELERATION(ANGLE_NORM_TO_RADIAN(FIXED_TO_FLOAT(YAW_VELOCITY(V))))
 #define TURN_VEL(V)   NTSC_VELOCITY(ANGLE_NORM_TO_RADIAN(FIXED_TO_FLOAT(YAW_VELOCITY(V))))
 
@@ -841,16 +843,64 @@ void game_init(void) {
 	printf("\n");
 
 	uint32_t size;
-	save_t *save_file = (save_t *)platform_load_userdata("save.dat", &size);
-	if (save_file) {
-		if (size == sizeof(save_t) && save_file->magic == SAVE_DATA_MAGIC) {
-			printf("load save data success\n");
-			memcpy(&save, save_file, sizeof(save_t));
+	char *save_buffer = (char *)platform_load_userdata("save.json", &size);
+	if (save_buffer) {
+		char *json_str = mem_temp_alloc(size + 1);
+		memcpy(json_str, save_buffer, size);
+		json_str[size] = '\0';
+		mem_temp_free(save_buffer);
+
+		cJSON *root = cJSON_Parse(json_str);
+		if (root) {
+			printf("load save data success (JSON)\n");
+			
+			cJSON *settings = cJSON_GetObjectItem(root, "settings");
+			if (settings) {
+				cJSON *item;
+				if ((item = cJSON_GetObjectItem(settings, "sfx_volume"))) save.sfx_volume = item->valuedouble;
+				if ((item = cJSON_GetObjectItem(settings, "music_volume"))) save.music_volume = item->valuedouble;
+				if ((item = cJSON_GetObjectItem(settings, "internal_roll"))) save.internal_roll = item->valuedouble;
+				if ((item = cJSON_GetObjectItem(settings, "screen_shake"))) save.screen_shake = item->valuedouble;
+				if ((item = cJSON_GetObjectItem(settings, "ui_scale"))) save.ui_scale = item->valueint;
+				if ((item = cJSON_GetObjectItem(settings, "draw_stats"))) save.draw_stats = item->valueint;
+				if ((item = cJSON_GetObjectItem(settings, "fullscreen"))) save.fullscreen = item->valueint;
+				if ((item = cJSON_GetObjectItem(settings, "screen_res"))) save.screen_res = item->valueint;
+				if ((item = cJSON_GetObjectItem(settings, "post_effect"))) save.post_effect = item->valueint;
+				if ((item = cJSON_GetObjectItem(settings, "analog_response"))) save.analog_response = item->valuedouble;
+			}
+
+			cJSON *unlocks = cJSON_GetObjectItem(root, "unlocks");
+			if (unlocks) {
+				cJSON *item;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_rapier_class"))) save.has_rapier_class = item->valueint;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_bonus_circuits"))) save.has_bonus_circuits = item->valueint;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_3_soundtrack"))) save.has_3_soundtrack = item->valueint;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_2097_soundtrack"))) save.has_2097_soundtrack = item->valueint;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_2097_tracks"))) save.has_2097_tracks = item->valueint;
+				if ((item = cJSON_GetObjectItem(unlocks, "has_64_tracks"))) save.has_64_tracks = item->valueint;
+			}
+
+			cJSON *controls = cJSON_GetObjectItem(root, "controls");
+			if (controls) {
+				const char *action_names[] = {
+					"A_UP", "A_DOWN", "A_LEFT", "A_RIGHT", 
+					"A_BRAKE_LEFT", "A_BRAKE_RIGHT", "A_THRUST", 
+					"A_FIRE", "A_CHANGE_VIEW"
+				};
+				for (int action = 0; action < len(action_names) && action < NUM_GAME_ACTIONS; action++) {
+					cJSON *btn_array = cJSON_GetObjectItem(controls, action_names[action]);
+					if (btn_array && cJSON_GetArraySize(btn_array) >= 2) {
+						save.buttons[action][0] = (uint8_t)cJSON_GetArrayItem(btn_array, 0)->valuedouble;
+						save.buttons[action][1] = (uint8_t)cJSON_GetArrayItem(btn_array, 1)->valuedouble;
+					}
+				}
+			}
+
+			cJSON_Delete(root);
+		} else {
+			printf("failed to parse save JSON data, falling back to defaults\n");
 		}
-		else {
-			printf("unexpected size/magic for save data\n");
-		}
-		mem_temp_free(save_file);
+		mem_temp_free(json_str);
 	}
 
 	platform_set_fullscreen(save.fullscreen);
@@ -978,12 +1028,54 @@ void game_update(void) {
 		save.is_dirty = true;
 	}
 
+	bool save_written = save.is_dirty;
 	if (save.is_dirty) {
-		// FIXME: use a text based format?
-		// FIXME: this should probably run async somewhere
 		save.is_dirty = false;
-		platform_store_userdata("save.dat", &save, sizeof(save_t));
-		printf("wrote save.dat\n");
+
+		cJSON *root = cJSON_CreateObject();
+		
+		cJSON *settings = cJSON_CreateObject();
+		cJSON_AddNumberToObject(settings, "sfx_volume", (double)save.sfx_volume);
+		cJSON_AddNumberToObject(settings, "music_volume", (double)save.music_volume);
+		cJSON_AddNumberToObject(settings, "internal_roll", (double)save.internal_roll);
+		cJSON_AddNumberToObject(settings, "screen_shake", (double)save.screen_shake);
+		cJSON_AddNumberToObject(settings, "ui_scale", (double)save.ui_scale);
+		cJSON_AddNumberToObject(settings, "draw_stats", (double)save.draw_stats);
+		cJSON_AddBoolToObject(settings, "fullscreen", save.fullscreen);
+		cJSON_AddNumberToObject(settings, "screen_res", (double)save.screen_res);
+		cJSON_AddNumberToObject(settings, "post_effect", (double)save.post_effect);
+		cJSON_AddNumberToObject(settings, "filtering_mode", (double)save.filtering_mode);
+		cJSON_AddNumberToObject(settings, "analog_response", (double)save.analog_response);
+		cJSON_AddItemToObject(root, "settings", settings);
+
+		cJSON *unlocks = cJSON_CreateObject();
+		cJSON_AddBoolToObject(unlocks, "has_rapier_class", save.has_rapier_class);
+		cJSON_AddBoolToObject(unlocks, "has_bonus_circuits", save.has_bonus_circuits);
+		cJSON_AddItemToObject(root, "unlocks", unlocks);
+
+		cJSON *controls = cJSON_CreateObject();
+		const char *action_names[] = {
+			"A_UP", "A_DOWN", "A_LEFT", "A_RIGHT", 
+			"A_BRAKE_LEFT", "A_BRAKE_RIGHT", "A_THRUST", 
+			"A_FIRE", "A_CHANGE_VIEW"
+		};
+		for (int action = 0; action < len(save.buttons); action++) {
+			if (action < (int)(sizeof(action_names) / sizeof(action_names[0]))) {
+				cJSON *btn_array = cJSON_CreateArray();
+				cJSON_AddItemToArray(btn_array, cJSON_CreateNumber(save.buttons[action][0]));
+				cJSON_AddItemToArray(btn_array, cJSON_CreateNumber(save.buttons[action][1]));
+				cJSON_AddItemToObject(controls, action_names[action], btn_array);
+			}
+		}
+		cJSON_AddItemToObject(root, "controls", controls);
+
+		char *json_str = cJSON_Print(root);
+		if (json_str) {
+			platform_store_userdata("save.json", json_str, strlen(json_str));
+			free(json_str);
+			printf("wrote save.json successfully\n");
+		}
+		cJSON_Delete(root);
 	}
 
 	double now = platform_now();
