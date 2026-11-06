@@ -31,6 +31,10 @@ else ifeq ($(RENDERER), VK)
 	RENDERER_SRC = src/render_vk.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_VK
 	L_FLAGS := $(L_FLAGS) -lvulkan
+else ifeq ($(RENDERER), MTL)
+	RENDERER_SRC = src/render_vk.c
+	C_FLAGS := $(C_FLAGS) -DRENDERER_MTL
+
 else
 $(error Unknown RENDERER)
 endif
@@ -48,9 +52,11 @@ ifeq ($(UNAME_S), Darwin)
 	C_FLAGS := $(C_FLAGS) -x objective-c -I/opt/homebrew/include -D_THREAD_SAFE -w
 	L_FLAGS := $(L_FLAGS) -L$(BREW_HOME)/lib -framework Foundation
 
-	ifeq ($(RENDERER), GL)
-		L_FLAGS := $(L_FLAGS) -lGLEW -GLU -framework OpenGL
-	endif
+    ifeq ($(RENDERER), GL)
+        L_FLAGS := $(L_FLAGS) -lGLEW -GLU -framework OpenGL
+    else ifeq ($(RENDERER), MTL)
+        L_FLAGS := $(L_FLAGS) -framework Metal
+    endif
 
 	L_FLAGS_SDL = -lSDL2
 	L_FLAGS_SDL3 = $(shell pkg-config --libs sdl3)
