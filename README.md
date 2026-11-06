@@ -1,5 +1,5 @@
 # wipEout Reworked
-A revamped wipeout-rewrite engine in SDL3 with additional QoL features.
+A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL features such as vibration, console-specific game menus, and more.
 
 # Working:
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
@@ -8,13 +8,13 @@ A revamped wipeout-rewrite engine in SDL3 with additional QoL features.
 # Planned:
 - [x] Vibration (requires linking to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
 - [ ] Demo(?)
-- [ ] Include ship alpha bleed and mine light fixes from mainline PRs
+- [x] Include ship alpha bleed and mine light fixes from mainline PRs
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
 - [ ] Wipeout 2097 + 64 track support in single races
-- [ ] Integrate SDL1 patches from wipeout-sdl1 so the engine can be compiled on all versions of SDL(?)
+- [ ] Integrate SDL1 + OpenGL 1.x patches from wipeout-sdl1 so wipeout-rewrite can be compiled on all versions of SDL/OpenGL from one repo(?)
 - [ ] Vulkan/Metal renderers(?)
-- [ ] De-spaghettification of the savegame system via cJSON
+- [ ] De-spaghettification of the struct-based savegame system via cJSON
 
 # Credits:
 Dave Gamble - cJSON (JSON implementation)
