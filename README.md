@@ -14,9 +14,13 @@ A revamped wipeout-rewrite engine in SDL3 with additional QoL features.
 - [ ] Wipeout 2097 + 64 track support in single races
 - [ ] Integrate SDL1 patches from wipeout-sdl1 so the engine can be compiled on all versions of SDL(?)
 - [ ] Vulkan/Metal renderers(?)
+- [ ] De-spaghettification of the savegame system via cJSON
+
+# Credits:
+Dave Gamble - cJSON (JSON implementation)
+unofficial-fish - Ship alpha bleed & mine lights fixes
 
 Original README below.
-
 
 # wipEout Rewrite
 
