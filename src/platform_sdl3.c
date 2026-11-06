@@ -318,7 +318,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
     #define PLATFORM_WINDOW_FLAGS 0
 
     void platform_video_init(void) {
-        // Vulkan surface initialized via renderer / window handle
+        render_init_surface(window);
     }
 
     void platform_prepare_frame(void) {
@@ -326,8 +326,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
     }
 
     void platform_video_cleanup(void) {
-        // Vulkan cleanup handled in renderer
-    }
+        render_frame_end();    }
 
     void platform_end_frame(void) {
         render_frame_end();
