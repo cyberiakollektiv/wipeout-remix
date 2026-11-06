@@ -1,4 +1,4 @@
-name: Build wipeout-reworked (SDL3 - GL & VK)
+name: Build wipeout-reworked (Multiplatform - SDL3)
 
 on:
   push:
@@ -9,20 +9,44 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - renderer: GL
-            artifact_name: wipegame-sdl3-opengl
-          - renderer: VK
-            artifact_name: wipegame-sdl3-vulkan
+          - os: ubuntu-latest
+            renderer: GL
+            artifact_name: wipegame-linux-opengl
+            binary_name: wipegame
+          - os: ubuntu-latest
+            renderer: VK
+            artifact_name: wipegame-linux-vulkan
+            binary_name: wipegame
+
+          - os: windows-latest
+            renderer: GL
+            artifact_name: wipegame-windows-opengl
+            binary_name: wipegame.exe
+          - os: windows-latest
+            renderer: VK
+            artifact_name: wipegame-windows-vulkan
+            binary_name: wipegame.exe
+
+          - os: macos-latest
+            renderer: GL
+            artifact_name: wipegame-macos-opengl
+            binary_name: wipegame
+          - os: macos-latest
+            renderer: MTL
+            artifact_name: wipegame-macos-metal
+            binary_name: wipegame
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install system dependencies (OpenGL, GLEW & Vulkan)
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -33,6 +57,24 @@ jobs:
             libvulkan-dev \
             vulkan-tools
 
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-glew
+            mingw-w64-x86_64-vulkan-devel
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install glew
+
       - name: Setup SDL3 from source
         uses: libsdl-org/setup-sdl@main
         id: sdl
@@ -40,21 +82,41 @@ jobs:
           version: 3-latest
           install-linux-dependencies: true
 
-      - name: Build with Makefile (SDL3 target)
+      - name: Build with Makefile (Unix)
+        if: runner.os != 'Windows'
         run: |
-          # Expose compiled SDL3 to pkg-config so the Makefile finds it
+          # Expose compiled SDL3 to pkg-config
           export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
           
           make clean
-          # Pass the renderer parameter to the makefile along with the sdl3 target
+          make sdl3 RENDERER=${{ matrix.renderer }} -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
+
+      - name: Build with Makefile (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          # Convert Windows path to MSYS path format for pkg-config
+          SDL_PREFIX=$(cygpath -u "${{ steps.sdl.outputs.prefix }}")
+          export PKG_CONFIG_PATH="$SDL_PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+          
+          make clean
           make sdl3 RENDERER=${{ matrix.renderer }} -j$(nproc)
 
-      - name: Rename binary to avoid overwrite during upload
+      - name: Rename binary
+        shell: bash
         run: |
-          mv wipegame wipegame-${{ matrix.renderer }}
+          TARGET_BIN="${{ matrix.binary_name }}"
+          OUTPUT_BIN="wipegame-${{ matrix.renderer }}-${{ matrix.os }}"
+          if [ -f "$TARGET_BIN" ]; then
+            mv "$TARGET_BIN" "$OUTPUT_BIN"
+          elif [ -f "wipegame" ]; then
+            mv "wipegame" "$OUTPUT_BIN"
+          elif [ -f "wipegame.exe" ]; then
+            mv "wipegame.exe" "$OUTPUT_BIN.exe"
+          fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: wipegame-${{ matrix.renderer }}
+          path: wipegame-${{ matrix.renderer }}-${{ matrix.os }}*
