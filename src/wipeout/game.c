@@ -1044,7 +1044,6 @@ void game_update(void) {
 		cJSON_AddBoolToObject(settings, "fullscreen", save.fullscreen);
 		cJSON_AddNumberToObject(settings, "screen_res", (double)save.screen_res);
 		cJSON_AddNumberToObject(settings, "post_effect", (double)save.post_effect);
-		cJSON_AddNumberToObject(settings, "filtering_mode", (double)save.filtering_mode);
 		cJSON_AddNumberToObject(settings, "analog_response", (double)save.analog_response);
 		cJSON_AddItemToObject(root, "settings", settings);
 
