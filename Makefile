@@ -21,16 +21,16 @@ endif
 ifeq ($(RENDERER), GL)
 	RENDERER_SRC = src/render_gl.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_GL
-	L_FLAGS := $(L_FLAGS) -lcJSON
+	L_FLAGS := $(L_FLAGS)
 
 else ifeq ($(RENDERER), SOFTWARE)
 	RENDERER_SRC = src/render_software.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_SOFTWARE
-	L_FLAGS := $(L_FLAGS) -lcJSON
+	L_FLAGS := $(L_FLAGS)
 else ifeq ($(RENDERER), VK)
 	RENDERER_SRC = src/render_vk.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_VK
-	L_FLAGS := $(L_FLAGS) -lvulkan -lcJSON
+	L_FLAGS := $(L_FLAGS) -lvulkan
 else
 $(error Unknown RENDERER)
 endif
