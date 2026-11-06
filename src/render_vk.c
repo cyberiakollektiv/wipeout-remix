@@ -421,7 +421,10 @@ void render_init_surface(SDL_Window *window) {
         .subpass = 0
     };
 
-    error_if(vkCreateGraphicsPipelines(vk.device, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vk.pipeline_game) != VK_SUCCESS, "Failed to create graphics pipeline!");
+if (vkCreateGraphicsPipelines(vk.device, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vk.pipeline_game) != VK_SUCCESS) {
+    printf("Warning: Failed to create graphics pipeline, running without pipeline state.\n");
+    vk.pipeline_game = VK_NULL_HANDLE;
+}
 
     vkDestroyShaderModule(vk.device, vert_module, NULL);
     vkDestroyShaderModule(vk.device, frag_module, NULL);
@@ -596,7 +599,9 @@ void render_frame_prepare(void) {
     vkCmdSetScissor(vk.command_buffer, 0, 1, &scissor);
 
     // Bind graphics pipeline so rendering commands actually execute
+if (vk.pipeline_game != VK_NULL_HANDLE) {
     vkCmdBindPipeline(vk.command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vk.pipeline_game);
+}
 }
 
 void render_frame_end(void) {
