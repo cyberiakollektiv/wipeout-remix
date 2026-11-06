@@ -324,6 +324,7 @@ void render_init_surface(SDL_Window *window) {
     vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.image_available_semaphore);
     vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.render_finished_semaphore);
     vkCreateFence(vk.device, &fence_info, NULL, &vk.in_flight_fence);
+    render_init(backbuffer_size.x == 0 ? vec2i(640, 480) : backbuffer_size);
 }
 
 void render_init(vec2i_t init_screen_size) {
