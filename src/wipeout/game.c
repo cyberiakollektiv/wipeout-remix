@@ -874,10 +874,6 @@ void game_init(void) {
 				cJSON *item;
 				if ((item = cJSON_GetObjectItem(unlocks, "has_rapier_class"))) save.has_rapier_class = item->valueint;
 				if ((item = cJSON_GetObjectItem(unlocks, "has_bonus_circuits"))) save.has_bonus_circuits = item->valueint;
-				if ((item = cJSON_GetObjectItem(unlocks, "has_3_soundtrack"))) save.has_3_soundtrack = item->valueint;
-				if ((item = cJSON_GetObjectItem(unlocks, "has_2097_soundtrack"))) save.has_2097_soundtrack = item->valueint;
-				if ((item = cJSON_GetObjectItem(unlocks, "has_2097_tracks"))) save.has_2097_tracks = item->valueint;
-				if ((item = cJSON_GetObjectItem(unlocks, "has_64_tracks"))) save.has_64_tracks = item->valueint;
 			}
 
 			cJSON *controls = cJSON_GetObjectItem(root, "controls");
