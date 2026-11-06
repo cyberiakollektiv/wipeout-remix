@@ -32,7 +32,7 @@ else ifeq ($(RENDERER), VK)
 	C_FLAGS := $(C_FLAGS) -DRENDERER_VK
 	L_FLAGS := $(L_FLAGS) -lvulkan
 else ifeq ($(RENDERER), MTL)
-	RENDERER_SRC = src/render_vk.c
+	RENDERER_SRC = src/render_mtl.c
 	C_FLAGS := $(C_FLAGS) -DRENDERER_MTL
 
 else
