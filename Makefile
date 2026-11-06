@@ -135,6 +135,7 @@ COMMON_SRC = \
 	src/system.c \
 	src/mem.c \
 	src/input.c \
+	src/wipeout/cJSON.c \
 	$(RENDERER_SRC)
 
 
