@@ -29,9 +29,6 @@ typedef struct {
 
 uint16_t RENDER_NO_TEXTURE;
 
-// -----------------------------------------------------------------------------
-// Vulkan Core & State Structures
-
 typedef struct {
     VkInstance instance;
     VkPhysicalDevice physical_device;
@@ -58,18 +55,15 @@ typedef struct {
     VkFence in_flight_fence;
     uint32_t current_image_index;
 
-    // Atlas Texture
     VkImage atlas_image;
     VkDeviceMemory atlas_image_memory;
     VkImageView atlas_image_view;
     VkSampler atlas_sampler;
 
-    // Vertex Buffer (Dynamic Host Coherent)
     VkBuffer vertex_buffer;
     VkDeviceMemory vertex_buffer_memory;
     void *vertex_buffer_mapped;
 
-    // Pipelines
     VkPipelineLayout pipeline_layout;
     VkPipeline pipeline_game;
 } vk_context_t;
@@ -102,9 +96,6 @@ static render_stats_t running_stats = {0};
 static render_stats_t end_stats = {0};
 
 static void render_flush(void);
-
-// -----------------------------------------------------------------------------
-// Helper Vulkan Memory / Buffer Allocation
 
 static uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties mem_properties;
@@ -140,11 +131,7 @@ static void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryP
     vkBindBufferMemory(vk.device, *buffer, *buffer_memory, 0);
 }
 
-// -----------------------------------------------------------------------------
-// Initialization & Core Setup called from SDL3 Platform Surface
-
 void render_init_surface(SDL_Window *window) {
-    // 1. Create Vulkan Instance
     VkApplicationInfo app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Wipeout Rewrite",
@@ -163,11 +150,8 @@ void render_init_surface(SDL_Window *window) {
     };
 
     error_if(vkCreateInstance(&create_info, NULL, &vk.instance) != VK_SUCCESS, "Failed to create Vulkan instance");
-
-    // 2. Create Window Surface via SDL3
     error_if(!SDL_Vulkan_CreateSurface(window, vk.instance, NULL, &vk.surface), "Failed to create Vulkan surface!");
 
-    // 3. Pick Physical Device & Queue Family
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(vk.instance, &device_count, NULL);
     error_if(device_count == 0, "Failed to find GPUs with Vulkan support!");
@@ -191,7 +175,6 @@ void render_init_surface(SDL_Window *window) {
         }
     }
 
-    // 4. Create Logical Device
     float queue_priority = 1.0f;
     VkDeviceQueueCreateInfo queue_create_info = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -212,7 +195,6 @@ void render_init_surface(SDL_Window *window) {
     error_if(vkCreateDevice(vk.physical_device, &device_create_info, NULL, &vk.device) != VK_SUCCESS, "Failed to create logical Vulkan device!");
     vkGetDeviceQueue(vk.device, vk.queue_family_index, 0, &vk.graphics_queue);
 
-    // 5. Create Swapchain
     VkSurfaceCapabilitiesKHR capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vk.physical_device, vk.surface, &capabilities);
     
@@ -245,7 +227,6 @@ void render_init_surface(SDL_Window *window) {
     vk.swapchain_images = malloc(sizeof(VkImage) * vk.swapchain_image_count);
     vkGetSwapchainImagesKHR(vk.device, vk.swapchain, &vk.swapchain_image_count, vk.swapchain_images);
 
-    // 6. Swapchain Image Views
     vk.swapchain_image_views = malloc(sizeof(VkImageView) * vk.swapchain_image_count);
     for (uint32_t i = 0; i < vk.swapchain_image_count; i++) {
         VkImageViewCreateInfo view_info = {
@@ -259,7 +240,6 @@ void render_init_surface(SDL_Window *window) {
         error_if(vkCreateImageView(vk.device, &view_info, NULL, &vk.swapchain_image_views[i]) != VK_SUCCESS, "Failed to create image view!");
     }
 
-    // 7. Render Pass
     VkAttachmentDescription color_attachment = {
         .format = vk.swapchain_image_format,
         .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -287,7 +267,6 @@ void render_init_surface(SDL_Window *window) {
     };
     error_if(vkCreateRenderPass(vk.device, &render_pass_info, NULL, &vk.render_pass) != VK_SUCCESS, "Failed to create render pass!");
 
-    // 8. Framebuffers
     vk.framebuffers = malloc(sizeof(VkFramebuffer) * vk.swapchain_image_count);
     for (uint32_t i = 0; i < vk.swapchain_image_count; i++) {
         VkFramebufferCreateInfo fb_info = {
@@ -302,7 +281,11 @@ void render_init_surface(SDL_Window *window) {
         error_if(vkCreateFramebuffer(vk.device, &fb_info, NULL, &vk.framebuffers[i]) != VK_SUCCESS, "Failed to create framebuffer!");
     }
 
-    // 9. Command Pool & Buffer
+    VkPipelineLayoutCreateInfo pipeline_layout_info = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
+    };
+    error_if(vkCreatePipelineLayout(vk.device, &pipeline_layout_info, NULL, &vk.pipeline_layout) != VK_SUCCESS, "Failed to create pipeline layout!");
+
     VkCommandPoolCreateInfo pool_info = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
@@ -318,19 +301,18 @@ void render_init_surface(SDL_Window *window) {
     };
     vkAllocateCommandBuffers(vk.device, &alloc_info, &vk.command_buffer);
 
-    // 10. Sync Objects
     VkSemaphoreCreateInfo sem_info = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
     VkFenceCreateInfo fence_info = { .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .flags = VK_FENCE_CREATE_SIGNALED_BIT };
     vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.image_available_semaphore);
     vkCreateSemaphore(vk.device, &sem_info, NULL, &vk.render_finished_semaphore);
     vkCreateFence(vk.device, &fence_info, NULL, &vk.in_flight_fence);
+    
     render_init(backbuffer_size.x == 0 ? vec2i(640, 480) : backbuffer_size);
 }
 
 void render_init(vec2i_t init_screen_size) {
     screen_size = init_screen_size;
 
-    // Vertex Buffer Setup (Dynamic host coherent)
     create_buffer(sizeof(tris_t) * RENDER_TRIS_BUFFER_CAPACITY,
                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -351,6 +333,7 @@ void render_cleanup(void) {
     vkDeviceWaitIdle(vk.device);
     vkDestroyBuffer(vk.device, vk.vertex_buffer, NULL);
     vkFreeMemory(vk.device, vk.vertex_buffer_memory, NULL);
+    vkDestroyPipelineLayout(vk.device, vk.pipeline_layout, NULL);
     vkDestroySemaphore(vk.device, vk.image_available_semaphore, NULL);
     vkDestroySemaphore(vk.device, vk.render_finished_semaphore, NULL);
     vkDestroyFence(vk.device, vk.in_flight_fence, NULL);
@@ -365,9 +348,6 @@ void render_cleanup(void) {
     vkDestroySurfaceKHR(vk.instance, vk.surface, NULL);
     vkDestroyInstance(vk.instance, NULL);
 }
-
-// -----------------------------------------------------------------------------
-// Projections & Framebuffer Resolution
 
 static mat4_t render_setup_2d_projection_mat(vec2i_t size) {
     float near = -1;
@@ -445,7 +425,7 @@ void render_frame_prepare(void) {
     VkCommandBufferBeginInfo begin_info = { .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
     vkBeginCommandBuffer(vk.command_buffer, &begin_info);
 
-    VkClearValue clear_color = {{{ 0.0f, 0.0f, 0.0f, 1.0f }}};
+    VkClearValue clear_color = {{{ 0.05f, 0.05f, 0.08f, 1.0f }}};
     VkRenderPassBeginInfo render_pass_info = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = vk.render_pass,
@@ -457,6 +437,22 @@ void render_frame_prepare(void) {
     };
 
     vkCmdBeginRenderPass(vk.command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+
+    VkViewport viewport = {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = (float)vk.swapchain_extent.width,
+        .height = (float)vk.swapchain_extent.height,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+    vkCmdSetViewport(vk.command_buffer, 0, 1, &viewport);
+
+    VkRect2D scissor = {
+        .offset = {0, 0},
+        .extent = vk.swapchain_extent
+    };
+    vkCmdSetScissor(vk.command_buffer, 0, 1, &scissor);
 }
 
 void render_frame_end(void) {
@@ -508,7 +504,6 @@ void render_flush(void) {
 
     memcpy((char*)vk.vertex_buffer_mapped, tris_buffer, sizeof(tris_t) * tris_len);
     
-    // Bind vertex buffer and draw
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(vk.command_buffer, 0, 1, &vk.vertex_buffer, offsets);
     vkCmdDraw(vk.command_buffer, tris_len * 3, 1, 0, 0);
