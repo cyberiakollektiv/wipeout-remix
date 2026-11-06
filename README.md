@@ -4,16 +4,18 @@ A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL featu
 ## Why SDL3?
 It slightly modernizes the codebase for future ports to SDL3-compatible systems (such as Android, DOS, Emscripten, FreeBSD, Haiku OS, HarmonyOS/OpenHarmony, iOS, Linux, macOS 10.14 and later, NetBSD, Nintendo Switch and Switch 2, Nintendo 3DS, Nokia N-Gage, OpenBSD, PlayStation 2, PlayStation 4, PlayStation 5, PlayStation Portable, PlayStation Vita, QNX, RISC OS, SteamOS, tvOS, visionOS, Windows, Windows GDK, and Xbox, as well as anything else that you can get SDL3 running on!).
 
-Originally this started as a modification for wipEoutX, an Xbox port that I've been working on, but there were issues with the NXDK version of SDL2 that reduced performance and caused audio jitter that were easily resolved by updating to SDL3. I had also begun working on other modernizations in that engine (vibration, light/alpha fixes) but decided that it made more sense to create a new repository and port that version over to the Xbox instead of the other way around, so people can use these fixes and QoL patches in their own ports. This aims to be a slightly more console-friendly version that feels less like a PC port once ported to other devices. 
+## Why this instead of wipeout-rewrite?
+
+Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xbox port that I've been working on, but there were issues with the NXDK version of SDL2 that reduced performance and caused audio jitter that were easily resolved by updating to SDL3. I had also begun working on other modernizations in that engine (vibration, light/alpha fixes) but decided that it made more sense to create a new repository and port that version over to the Xbox instead of the other way around, so people can use these fixes/hacks and QoL patches in their own ports. This aims to be a slightly more console-friendly version that feels less like a PC port once ported to other devices. 
 
 # Working:
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
 - [x] Modified menu assets for ease of navigation, including bugfixes
+- [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
 
 # Planned:
-- [x] Vibration (requires linking to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
+- [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
 - [ ] Demo(?)
-- [x] Include ship alpha bleed and mine light fixes from mainline PRs
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
 - [ ] Wipeout 2097 + 64 track support in single races
