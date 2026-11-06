@@ -315,7 +315,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
     }
 
 #elif defined(RENDERER_VK) // ---------------------------------------------------
-    #define PLATFORM_WINDOW_FLAGS 0
+    #define PLATFORM_WINDOW_FLAGS SDL_WINDOW_VULKAN
 
     void platform_video_init(void) {
         render_init_surface(window);
@@ -326,7 +326,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
     }
 
     void platform_video_cleanup(void) {
-        render_frame_end();    }
+        render_cleanup();    }
 
     void platform_end_frame(void) {
         render_frame_end();
