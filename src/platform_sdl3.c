@@ -344,7 +344,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
     static SDL_MetalView metal_view = NULL;
 
     void platform_video_init(void) {
-        metal_view = SDL_Vulkan_CreateMetalView(window);
+        metal_view = SDL_Metal_CreateView(window);
         
         int width, height;
         SDL_GetWindowSizeInPixels(window, &width, &height);
@@ -372,7 +372,6 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
         SDL_GetWindowSizeInPixels(window, &width, &height);
         return vec2i(width, height);
     }
-
 #elif defined(RENDERER_SOFTWARE) || defined(RENDERER_NULL)// -------------------
     #define PLATFORM_WINDOW_FLAGS 0
     static SDL_Renderer *renderer;
