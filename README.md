@@ -15,7 +15,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
-- [ ] Add cockpit and reverse camera angles
+- [ ] Add cockpit, reverse, and top-down camera angles, as well as behind/left/right view via the right analog stick (if available).
 - [ ] Demo(?)
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
