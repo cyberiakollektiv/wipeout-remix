@@ -599,6 +599,7 @@ save_t save = {
 	.vibration_toggle = true,
 	.rightstick_toggle = true,
 	.modern_camera = true, // False enables classic look
+	.minimap = true, // False enables classic look
 
 	.has_rapier_class = true,  // for testing; should be false in prod
 	.has_bonus_circuits = true, // for testing; should be false in prod
