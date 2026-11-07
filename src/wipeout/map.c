@@ -31,7 +31,7 @@ void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_
     int map_width  = (int)(BASE_MAP_WIDTH * ui_scale);
     int map_height = (int)(BASE_MAP_HEIGHT * ui_scale);
     int map_margin = (int)(BASE_MAP_MARGIN * ui_scale);
-    int offset_up  = (int)(30.0f * ui_scale);
+    int offset_up  = (int)(50.0f * ui_scale);
 
     int screen_x_offset = map_margin; 
     int screen_y_offset = screen_size.y - map_height - map_margin - offset_up;
