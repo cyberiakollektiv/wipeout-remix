@@ -298,6 +298,8 @@ typedef struct {
 	
 	uint8_t buttons[NUM_GAME_ACTIONS][2];
 	float analog_response;
+	float r_analog_response; // Modern control update.
+
 
 	char highscores_name[4];
 	highscores_t highscores[NUM_RACE_CLASSES][NUM_CIRCUITS][NUM_HIGHSCORE_TABS];
