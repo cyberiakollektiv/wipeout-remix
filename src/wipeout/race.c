@@ -5,6 +5,7 @@
 
 #include "track.h"
 #include "ship.h"
+#include "map.h"
 #include "weapon.h"
 #include "droid.h"
 #include "camera.h"
@@ -26,6 +27,7 @@ static float attract_start_time;
 static menu_t *active_menu = NULL;
 
 void race_init(void) {
+	map_init();
 	ingame_menus_load();
 	menu_is_scroll_text = false;
 
@@ -78,6 +80,7 @@ void race_update(void) {
 		weapons_update();
 		particles_update();
 		scene_update();
+		map_update();
 		if (g.race_type != RACE_TYPE_TIME_TRIAL) {
 			track_cycle_pickups();
 		}
@@ -121,6 +124,7 @@ void race_update(void) {
 
 	if (flags_is(g.ships[g.pilot].flags, SHIP_RACING)) {
 		hud_draw(&g.ships[g.pilot]);
+		map_draw(&g.track, g.ships, len(g.ships), g.pilot);
 	}
 
 	if (active_menu) {
