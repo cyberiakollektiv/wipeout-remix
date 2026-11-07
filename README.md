@@ -1,5 +1,5 @@
 # wipEout Reworked
-A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL features such as vibration, console-specific game menus, and more.
+A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL features such as vibration, modern camera controls, console-specific game menus, and more.
 
 ## Why SDL3?
 It slightly modernizes the codebase for future ports to SDL3-compatible systems (such as Android, DOS, Emscripten, FreeBSD, Haiku OS, HarmonyOS/OpenHarmony, iOS, Linux, macOS 10.14 and later, NetBSD, Nintendo Switch and Switch 2, Nintendo 3DS, Nokia N-Gage, OpenBSD, PlayStation 2, PlayStation 4, PlayStation 5, PlayStation Portable, PlayStation Vita, QNX, RISC OS, SteamOS, tvOS, visionOS, Windows, Windows GDK, and Xbox, as well as anything else that you can get SDL3 running on!).
