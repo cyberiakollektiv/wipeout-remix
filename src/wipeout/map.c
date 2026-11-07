@@ -2,13 +2,19 @@
 #include "../render.h"
 #include "track.h"
 #include "ship.h"
+#include "game.h"
+#include "image.h"
 #include <math.h>
 
 #define BASE_MAP_WIDTH  120
 #define BASE_MAP_HEIGHT 120
 #define BASE_MAP_MARGIN 15
 
+static texture_list_t pilot_cmp_textures;
+static bool map_assets_initialized = false;
+
 void map_init(void) {
+    map_assets_initialized = false;
 }
 
 void map_update(void) {
@@ -17,6 +23,11 @@ void map_update(void) {
 void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_index) {
     if (!track_ptr || !ships_ptr || player_ship_index < 0 || player_ship_index >= ship_count) {
         return;
+    }
+
+    if (!map_assets_initialized) {
+        pilot_cmp_textures = image_get_compressed_textures("wipeout/common/pilot.cmp");
+        map_assets_initialized = true;
     }
 
     track_t *track = (track_t *)track_ptr;
@@ -97,20 +108,33 @@ void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_
         if (map_x >= screen_x_offset && map_x <= (screen_x_offset + map_width) &&
             map_y >= screen_y_offset && map_y <= (screen_y_offset + map_height)) {
             
-            rgba_t dot_color = (i == player_ship_index) ? rgba(0, 255, 255, 255) : rgba(255, 50, 50, 255);
+            int pilot_id = ships[i].pilot;
+            uint16_t emblem_tex = 0;
 
-            int ship_radius = (ui_scale < 0.8f) ? 1 : 2;
-            for (int cy = -ship_radius; cy <= ship_radius; cy++) {
-                for (int cx = -ship_radius; cx <= ship_radius; cx++) {
-                    if (cx * cx + cy * cy <= (ship_radius * ship_radius + 1)) {
-                        render_push_2d(
-                            vec2i((int)(map_x + cx), (int)(map_y + cy)), 
-                            vec2i(1, 1), 
-                            dot_color, 
-                            RENDER_NO_TEXTURE
-                        );
-                    }
+            if (pilot_id >= 0 && pilot_id < 8) {
+                int logo_index = def.pilots[pilot_id].logo_model;
+                if (logo_index < pilot_cmp_textures.len) {
+                    emblem_tex = texture_from_list(pilot_cmp_textures, logo_index);
                 }
+            }
+
+            int icon_size = (int)(10.0f * ui_scale);
+
+            if (emblem_tex != 0) {
+                render_push_2d(
+                    vec2i((int)(map_x - icon_size / 2), (int)(map_y - icon_size / 2)),
+                    vec2i(icon_size, icon_size),
+                    rgba(255, 255, 255, 255),
+                    emblem_tex
+                );
+            } else {
+                rgba_t dot_color = (i == player_ship_index) ? rgba(0, 255, 255, 255) : rgba(255, 50, 50, 255);
+                render_push_2d(
+                    vec2i((int)(map_x - 2), (int)(map_y - 2)),
+                    vec2i(4, 4),
+                    dot_color,
+                    RENDER_NO_TEXTURE
+                );
             }
         }
     }
