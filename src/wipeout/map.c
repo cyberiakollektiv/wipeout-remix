@@ -1,5 +1,5 @@
 #include "map.h"
-#include "render.h"
+#include "../render.h"
 #include "track.h"
 #include "ship.h"
 #include <math.h>
