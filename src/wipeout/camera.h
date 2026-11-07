@@ -24,6 +24,11 @@ typedef struct camera_t {
 
 void camera_init(camera_t *camera, section_t *section);
 vec3_t camera_forward(camera_t *camera);
+void camera_update_race_cockpit(camera_t *camera, ship_t *ship, droid_t *droid);
+void camera_update_race_rear(camera_t *camera, ship_t *ship, droid_t *droid);
+void camera_update_race_top_down(camera_t *camera, ship_t *ship, droid_t *droid);
+void camera_update_race_look_left(camera_t *camera, ship_t *ship, droid_t *droid);
+void camera_update_race_look_right(camera_t *camera, ship_t *ship, droid_t *droid);
 void camera_update(camera_t *camera, ship_t *ship, droid_t *droid);
 void camera_update_race_external(camera_t *, ship_t *camShip, droid_t *);
 void camera_update_race_internal(camera_t *, ship_t *camShip, droid_t *);
