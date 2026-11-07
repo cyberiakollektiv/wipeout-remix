@@ -595,6 +595,11 @@ save_t save = {
 	.screen_res = 0,
 	.post_effect = 0,
 
+	// New controller options
+	.vibration_toggle = true,
+	.rightstick_toggle = true,
+	.modern_camera = true, // False enables classic look
+
 	.has_rapier_class = true,  // for testing; should be false in prod
 	.has_bonus_circuits = true, // for testing; should be false in prod
 
@@ -607,9 +612,14 @@ save_t save = {
 		[A_BRAKE_RIGHT] = {INPUT_KEY_V, INPUT_GAMEPAD_R_SHOULDER},
 		[A_THRUST] = {INPUT_KEY_X, INPUT_GAMEPAD_A},
 		[A_FIRE] = {INPUT_KEY_Z, INPUT_GAMEPAD_X},
+		[A_LOOKLEFT] = {INPUT_KEY_Q, INPUT_GAMEPAD_R_STICK_LEFT}, // Modern control update
+		[A_LOOKRIGHT] = {INPUT_KEY_E, INPUT_GAMEPAD_R_STICK_RIGHT}, // Modern control update
+		[A_LOOKBACK] = {INPUT_KEY_R, INPUT_GAMEPAD_R_STICK_DOWN}, // Modern control update
 		[A_CHANGE_VIEW] = {INPUT_KEY_A, INPUT_GAMEPAD_Y},
 	},
 	.analog_response = 2, // Exponent for stick turn input
+	.r_analog_response = 2, // Exponent for right stick look input
+
 
 	.highscores_name = {0,0,0,0},
 	.highscores = {
