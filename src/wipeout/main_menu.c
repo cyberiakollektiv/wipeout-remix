@@ -241,7 +241,25 @@ static void toggle_analog_response(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_r_analog_response(menu_t *menu, int data) {
+	save.r_analog_response = (float)data + 1;
+	save.is_dirty = true;
+}
+
+static void toggle_vibration_toggle(menu_t *menu, int data) {
+	save.vibration_toggle = data;
+	save.is_dirty = true;
+}
+
+static void toggle_modern_camera(menu_t *menu, int data) {
+	save.modern_camera = data;
+	save.is_dirty = true;
+}
+
 static const char *analog_response[] = {"LINEAR", "MODERATE", "HEAVY"};
+static const char *r_analog_response[] = {"LINEAR", "MODERATE", "HEAVY"};
+static const char *vibration_options[] = {"OFF", "ON"};
+static const char *modern_camera[] = {"CLASSIC", "MODERN"};
 
 static void page_options_controls_init(menu_t *menu) {
 	menu_page_t *page = menu_push(menu, "CONTROLS", page_options_control_draw);
@@ -263,9 +281,14 @@ static void page_options_controls_init(menu_t *menu) {
 	menu_page_add_button(page, A_THRUST, "THRUST", page_options_controls_set_init);
 	menu_page_add_button(page, A_FIRE, "FIRE", page_options_controls_set_init);
 	menu_page_add_button(page, A_CHANGE_VIEW, "VIEW", page_options_controls_set_init);
+	menu_page_add_button(page, A_LOOKLEFT, "LOOK LEFT", page_options_controls_set_init);
+	menu_page_add_button(page, A_LOOKRIGHT, "LOOK RIGHT", page_options_controls_set_init);
+	menu_page_add_button(page, A_LOOKBACK, "LOOK BEHIND", page_options_controls_set_init);
 
-	menu_page_add_toggle(page, save.analog_response - 1, "ANALOG RESPONSE", analog_response, len(analog_response), toggle_analog_response);
-}
+	menu_page_add_toggle(page, save.vibration_toggle, "VIBRATION", vibration_options, len(vibration_options), toggle_vibration_toggle);
+	menu_page_add_toggle(page, save.modern_camera, "LOOK STYLE", modern_camera, len(modern_camera), toggle_modern_camera);
+	menu_page_add_toggle(page, save.analog_response - 1, "LEFT ANALOG RESPONSE", analog_response, len(analog_response), toggle_analog_response);
+	menu_page_add_toggle(page, save.r_analog_response - 1, "RIGHT ANALOG RESPONSE", r_analog_response, len(r_analog_response), toggle_r_analog_response);}
 
 // -----------------------------------------------------------------------------
 // Options Video
