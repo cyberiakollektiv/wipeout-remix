@@ -29,8 +29,8 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [ ] De-spaghettification of the struct-based savegame system via cJSON
 
 # Credits:
-Dave Gamble - cJSON (JSON implementation)
-unofficial-fish - Ship alpha bleed & mine lights fixes
+- Dave Gamble - cJSON (JSON implementation)
+- unofficial-fish - Ship alpha bleed & mine lights fixes
 
 Original README below.
 
