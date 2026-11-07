@@ -65,6 +65,51 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
 	camera->angle = vec3_mul(ship->angle, vec3(1,1,0));
 }
 
+void camera_update_race_rear(camera_t *camera, ship_t *ship, droid_t *droid) {
+	vec3_t pos = vec3_transform(vec3(0, 50, 1024), &ship->mat);
+	pos.y -= 200;
+
+	camera->section = track_nearest_section(pos, vec3(1,1,1), ship->section, NULL);
+	camera->position = pos;
+
+	camera_look_at_point(camera, ship->position);
+}
+
+void camera_update_race_cockpit(camera_t *camera, ship_t *ship, droid_t *droid) { // The same as the attract mode cockpit view
+	camera->section = ship->section;
+	camera->position = ship_cockpit(ship);
+	camera->angle = vec3_mul(ship->angle, vec3(1,1,0)); // No roll
+}
+
+void camera_update_race_top_down(camera_t *camera, ship_t *ship, droid_t *droid) {
+	camera->section = ship->section;
+	
+	vec3_t pos = ship->position;
+	pos.y -= 8000;
+	
+	camera->position = pos;
+	
+	camera->angle = vec3(-(M_PI / 2.0f), ship->angle.y, 0);
+}
+
+void camera_update_race_look_left(camera_t *camera, ship_t *ship, droid_t *droid) {
+	camera->section = ship->section;
+	
+	vec3_t offset = vec3(-350, -50, -100);
+	camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
+	
+	camera_look_at_point(camera, ship->position);
+}
+
+void camera_update_race_look_right(camera_t *camera, ship_t *ship, droid_t *droid) {
+	camera->section = ship->section;
+	
+	vec3_t offset = vec3(350, -50, -100);
+	camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
+	
+	camera_look_at_point(camera, ship->position);
+}
+
 void camera_update_race_internal(camera_t *camera, ship_t *ship, droid_t *droid) {
 	camera->section = ship->section;
 	camera->position = ship_cockpit(ship);
