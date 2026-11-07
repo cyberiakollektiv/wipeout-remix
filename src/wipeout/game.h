@@ -35,6 +35,9 @@ typedef enum {
 	A_THRUST,
 	A_FIRE,
 	A_CHANGE_VIEW,
+	A_LOOKLEFT,
+	A_LOOKRIGHT,
+	A_LOOKBACK,
 	NUM_GAME_ACTIONS,
 
 	A_MENU_UP,
@@ -282,6 +285,13 @@ typedef struct {
 	int screen_res;
 	int post_effect;
 	float screen_shake;
+
+	// Modern controller options
+	bool vibration_toggle;
+	bool rightstick_toggle;
+	bool modern_camera;
+	bool rs_invert_x;
+	bool rs_invert_y;
 
 	uint32_t has_rapier_class;
 	uint32_t has_bonus_circuits;
