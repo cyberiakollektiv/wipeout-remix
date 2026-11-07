@@ -1,12 +1,12 @@
 #include "map.h"
-#include "../render.h"
+#include "render.h"
 #include "track.h"
 #include "ship.h"
 #include <math.h>
 
-#define BASE_MAP_WIDTH  160
-#define BASE_MAP_HEIGHT 160
-#define BASE_MAP_MARGIN 20
+#define BASE_MAP_WIDTH  120
+#define BASE_MAP_HEIGHT 120
+#define BASE_MAP_MARGIN 15
 
 void map_init(void) {
 }
@@ -26,12 +26,12 @@ void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_
     vec2i_t screen_size = render_size();
 
     float ui_scale = (float)screen_size.y / 480.0f;
-    if (ui_scale < 1.0f) ui_scale = 1.0f;
+    if (ui_scale < 0.5f) ui_scale = 0.5f;
 
     int map_width  = (int)(BASE_MAP_WIDTH * ui_scale);
     int map_height = (int)(BASE_MAP_HEIGHT * ui_scale);
     int map_margin = (int)(BASE_MAP_MARGIN * ui_scale);
-    int offset_up  = (int)(50.0f * ui_scale);
+    int offset_up  = (int)(30.0f * ui_scale);
 
     int screen_x_offset = map_margin; 
     int screen_y_offset = screen_size.y - map_height - map_margin - offset_up;
@@ -67,7 +67,7 @@ void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_
             if (map_x >= screen_x_offset && map_x <= (screen_x_offset + map_width) &&
                 map_y >= screen_y_offset && map_y <= (screen_y_offset + map_height)) {
                 
-                int node_radius = ui_scale > 1.5f ? 2 : 1;
+                int node_radius = (ui_scale < 0.8f) ? 0 : 1;
                 for (int cy = -node_radius; cy <= node_radius; cy++) {
                     for (int cx = -node_radius; cx <= node_radius; cx++) {
                         if (cx * cx + cy * cy <= (node_radius * node_radius + 1)) {
@@ -99,30 +99,12 @@ void map_draw(void *track_ptr, void *ships_ptr, int ship_count, int player_ship_
             
             rgba_t dot_color = (i == player_ship_index) ? rgba(0, 255, 255, 255) : rgba(255, 50, 50, 255);
 
-            int ship_radius = ui_scale > 1.5f ? 3 : 2;
+            int ship_radius = (ui_scale < 0.8f) ? 1 : 2;
             for (int cy = -ship_radius; cy <= ship_radius; cy++) {
                 for (int cx = -ship_radius; cx <= ship_radius; cx++) {
                     if (cx * cx + cy * cy <= (ship_radius * ship_radius + 1)) {
                         render_push_2d(
                             vec2i((int)(map_x + cx), (int)(map_y + cy)), 
-                            vec2i(1, 1), 
-                            dot_color, 
-                            RENDER_NO_TEXTURE
-                        );
-                    }
-                }
-            }
-
-            float ship_relative_yaw = ships[i].angle.y - yaw;
-            float nose_x = map_x + sinf(ship_relative_yaw) * (5.0f * ui_scale);
-            float nose_y = map_y - cosf(ship_relative_yaw) * (5.0f * ui_scale);
-
-            int nose_radius = ui_scale > 1.5f ? 2 : 1;
-            for (int cy = -nose_radius; cy <= nose_radius; cy++) {
-                for (int cx = -nose_radius; cx <= nose_radius; cx++) {
-                    if (cx * cx + cy * cy <= (nose_radius * nose_radius + 1)) {
-                        render_push_2d(
-                            vec2i((int)(nose_x + cx), (int)(nose_y + cy)), 
                             vec2i(1, 1), 
                             dot_color, 
                             RENDER_NO_TEXTURE
