@@ -15,10 +15,10 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 
 # Partially Working:
 - [x] New camera angles (cockpit view, top-down view, and behind/left/right via right-stick, RS support still needs to be implemented)
+- [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
 
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
-- [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
 - [ ] Demo(?)
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
