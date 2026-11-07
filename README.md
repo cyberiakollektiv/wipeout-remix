@@ -13,9 +13,12 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [x] Modified menu assets for ease of navigation, including bugfixes
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
 
+# Partially Working:
+- [x] New camera angles (cockpit view, top-down view, and behind/left/right via right-stick, RS support still needs to be implemented)
+
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
-- [ ] Add cockpit, reverse, and top-down camera angles, as well as behind/left/right view via the right analog stick (if available).
+- [ ] Add cockpit, reverse, and top-down camera angles, as well as behind/left/right view via the right analog stick (if available), as well as a "free cam" mode for the right stick.
 - [ ] Demo(?)
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
