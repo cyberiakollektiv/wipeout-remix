@@ -4,6 +4,7 @@
 #include "../utils.h"
 #include "../input.h"
 #include "../system.h"
+#include "../platform.h"
 
 #include "track.h"
 #include "ship.h"
