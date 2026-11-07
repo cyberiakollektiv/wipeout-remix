@@ -115,6 +115,7 @@ TARGET_WASM ?= $(WASM_RELEASE_DIR)/wipeout.js
 TARGET_WASM_MINIMAL ?= $(WASM_RELEASE_DIR)/wipeout-minimal.js
 
 COMMON_SRC = \
+	src/wipeout/map.c \
 	src/wipeout/race.c \
 	src/wipeout/camera.c \
 	src/wipeout/object.c \
