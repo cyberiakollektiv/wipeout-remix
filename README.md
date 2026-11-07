@@ -12,11 +12,10 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
 - [x] Modified menu assets for ease of navigation, including bugfixes
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
-- [x] New camera angles (cockpit view, top-down view)
+- [x] New camera angles (cockpit view, top-down view) as well as "modern camera" and "classic camera" look modes for the right analog stick / mouse!
 - [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
 
 # Partially Working:
-- [x] Right-stick "classic mode" (left/right/back) and "free look" modes (support still needs to be implemented in the main menu with a toggle and a control definition like A_RSTICKLOOK)
 
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
