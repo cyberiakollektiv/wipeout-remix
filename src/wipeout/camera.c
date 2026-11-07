@@ -1,12 +1,14 @@
 #include "../utils.h"
 #include "../types.h"
 #include "../system.h"
+#include "../input.h"
 
 #include "track.h"
 #include "ship.h"
 #include "droid.h"
 #include "camera.h"
 #include "game.h"
+
 
 void camera_init(camera_t *camera, section_t *section) {
 	camera->section = section;
