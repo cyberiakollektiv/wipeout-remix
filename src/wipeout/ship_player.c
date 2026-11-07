@@ -117,15 +117,23 @@ void ship_player_update_intro_general(ship_t *self) {
 
 	// View
 	if (input_pressed(A_CHANGE_VIEW)) {
-		if (flags_not(self->flags, SHIP_VIEW_INTERNAL)) {
-			g.camera.update_func = camera_update_race_internal;
-			flags_add(self->flags, SHIP_VIEW_INTERNAL);
-		}
-		else {
-			g.camera.update_func = camera_update_race_external;
-			flags_rm(self->flags, SHIP_VIEW_INTERNAL);
-		}
-	}
+ 	       if (g.camera.update_func == camera_update_race_external) {
+            g.camera.update_func = camera_update_race_cockpit;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (g.camera.update_func == camera_update_race_cockpit) {
+            g.camera.update_func = camera_update_race_internal;
+            flags_add(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (g.camera.update_func == camera_update_race_internal) {
+            g.camera.update_func = camera_update_race_top_down;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else {
+            g.camera.update_func = camera_update_race_external;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+    }
 
 	ship_player_update_sfx(self);
 }
@@ -253,15 +261,23 @@ void ship_player_update_race(ship_t *self) {
 
 	// View
 	if (input_pressed(A_CHANGE_VIEW)) {
-		if (flags_not(self->flags, SHIP_VIEW_INTERNAL)) {
-			g.camera.update_func = camera_update_race_internal;
-			flags_add(self->flags, SHIP_VIEW_INTERNAL);
-		}
-		else {
-			g.camera.update_func = camera_update_race_external;
-			flags_rm(self->flags, SHIP_VIEW_INTERNAL);
-		}
-	}
+ 	       if (g.camera.update_func == camera_update_race_external) {
+            g.camera.update_func = camera_update_race_cockpit;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (g.camera.update_func == camera_update_race_cockpit) {
+            g.camera.update_func = camera_update_race_internal;
+            flags_add(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (g.camera.update_func == camera_update_race_internal) {
+            g.camera.update_func = camera_update_race_top_down;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else {
+            g.camera.update_func = camera_update_race_external;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+    }
 
 	if (self->weapon_type == WEAPON_TYPE_MISSILE || self->weapon_type == WEAPON_TYPE_EBOLT) {
 		self->weapon_target = ship_player_find_target(self);
