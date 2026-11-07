@@ -65,6 +65,42 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
 	camera->angle = vec3_mul(ship->angle, vec3(1,1,0));
 }
 
+void camera_update_race_external_freecam(camera_t *camera, ship_t *ship, droid_t *droid) {
+    float orbit_distance = 1100.0f;
+    float base_height = -180.0f;
+
+    static float stick_yaw_offset = 0.0f;
+    bool stick_active = false;
+
+    float rs_left  = input_state(A_LOOKLEFT);
+    float rs_right = input_state(A_LOOKRIGHT);
+
+    float rs_x = rs_right - rs_left;
+
+    if (rs_x < -0.15f || rs_x > 0.15f) {
+        stick_yaw_offset -= rs_x * 0.04f;
+        stick_active = true;
+    }
+
+    if (!stick_active) {
+        stick_yaw_offset += (0.0f - stick_yaw_offset) * 0.1f;
+    }
+
+    float combined_yaw = ship->angle.y + stick_yaw_offset;
+
+    vec3_t desired_pos = vec3_add(ship->position, vec3(
+        sinf(combined_yaw) * orbit_distance,
+        base_height,
+        -cosf(combined_yaw) * orbit_distance
+    ));
+
+    vec3_t diff = vec3_sub(desired_pos, camera->position);
+    camera->velocity = vec3_mulf(diff, 0.4f); // Direct interpolation prevents rubber-banding
+    camera->position = vec3_add(camera->position, camera->velocity);
+    
+    camera_look_at_point(camera, ship->position);
+}
+
 void camera_update_race_rear(camera_t *camera, ship_t *ship, droid_t *droid) {
 	vec3_t pos = vec3_transform(vec3(0, 50, 1024), &ship->mat);
 	pos.y -= 200;
