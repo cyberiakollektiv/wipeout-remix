@@ -292,6 +292,8 @@ typedef struct {
 	bool modern_camera;
 	bool rs_invert_x;
 	bool rs_invert_y;
+	bool minimap;
+
 
 	uint32_t has_rapier_class;
 	uint32_t has_bonus_circuits;
