@@ -35,9 +35,9 @@ typedef enum {
 	A_THRUST,
 	A_FIRE,
 	A_CHANGE_VIEW,
-	A_LOOKLEFT,
-	A_LOOKRIGHT,
-	A_LOOKBACK,
+	A_LOOKLEFT, // Modern control update
+	A_LOOKRIGHT, // Modern control update
+	A_LOOKBACK, // Modern control update
 	NUM_GAME_ACTIONS,
 
 	A_MENU_UP,
