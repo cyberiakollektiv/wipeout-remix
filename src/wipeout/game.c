@@ -597,7 +597,7 @@ save_t save = {
 
 	// New preferences options
 	.minimap = true, // False disables minimap
-	.modern_camera = true, // False enables "classic look"
+	.look_style = true, // False enables "classic look"
 	.weapons = true, // Enable / disable weapons in races
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
 	.default_name = 0, // Default player name
