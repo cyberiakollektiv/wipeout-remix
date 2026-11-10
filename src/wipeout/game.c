@@ -620,9 +620,9 @@ save_t save = {
 		[A_BRAKE_RIGHT] = {INPUT_KEY_V, INPUT_GAMEPAD_R_SHOULDER},
 		[A_THRUST] = {INPUT_KEY_X, INPUT_GAMEPAD_A},
 		[A_FIRE] = {INPUT_KEY_Z, INPUT_GAMEPAD_X},
-		[A_LOOKLEFT] = {INPUT_KEY_Q, INPUT_GAMEPAD_R_STICK_LEFT}, // Modern control update
-		[A_LOOKRIGHT] = {INPUT_KEY_E, INPUT_GAMEPAD_R_STICK_RIGHT}, // Modern control update
-		[A_LOOKBACK] = {INPUT_KEY_R, INPUT_GAMEPAD_R_STICK_DOWN}, // Modern control update
+//		[A_LOOKLEFT] = {INPUT_KEY_Q, INPUT_GAMEPAD_R_STICK_LEFT}, // Modern control update
+//		[A_LOOKRIGHT] = {INPUT_KEY_E, INPUT_GAMEPAD_R_STICK_RIGHT}, // Modern control update
+//		[A_LOOKBACK] = {INPUT_KEY_R, INPUT_GAMEPAD_R_STICK_DOWN}, // Modern control update
 		[A_CHANGE_VIEW] = {INPUT_KEY_A, INPUT_GAMEPAD_Y},
 	},
 	.analog_response = 2, // Exponent for stick turn input
