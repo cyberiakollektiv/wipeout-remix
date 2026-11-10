@@ -58,7 +58,7 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
 
     if (look_left) {
         camera->section = ship->section;
-        vec3_t offset = vec3(-350, -50, -100);
+        vec3_t offset = vec3(350, -50, -100);
         camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
         camera_look_at_point(camera, ship->position);
         return;
@@ -66,7 +66,7 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
     
     if (look_right) {
         camera->section = ship->section;
-        vec3_t offset = vec3(350, -50, -100);
+        vec3_t offset = vec3(-350, -50, -100);
         camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
         camera_look_at_point(camera, ship->position);
         return;
