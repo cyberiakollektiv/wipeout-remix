@@ -172,9 +172,9 @@ static void toggle_default_name(menu_t *menu, int data) {
 }
 
 static const char *opts_off_on[] = {"OFF", "ON"};
-static const char *modern_camera[] = {"CLASSIC", "MODERN"};
-static const char *default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
-static const char *default_name[] = {"JOD", "DAC", "ART", "ANC", "KES", "ART", "SDR", "PAJ"}; // Temporary default name switch using abbreviated pilot names, need to change this to actual player input
+static const char *opts_modern_camera[] = {"CLASSIC", "MODERN"};
+static const char *opts_default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
+static const char *opts_default_name[] = {"JOD", "DAC", "ART", "ANC", "KES", "ART", "SDR", "PAJ"}; // Temporary default name switch using abbreviated pilot names, need to change this to actual player input
 
 static void page_options_preferences_init(menu_t *menu) {
 	menu_page_t *page = menu_push(menu, "PREFERENCES", NULL);
@@ -188,8 +188,8 @@ static void page_options_preferences_init(menu_t *menu) {
 	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_off_on, len(opts_minimap), toggle_minimap);
 	menu_page_add_toggle(page, save.modern_camera, "LOOK STYLE", modern_camera, len(modern_camera), toggle_modern_camera);
 	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_off_on, len(opts_off_on), toggle_weapons);
-	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", default_view, len(default_view), toggle_default_view);
-	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opts_default_name, len(opts_default_name), toggle_default_name);
+	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", opts_default_view, len(opts_default_view), toggle_default_view);
+	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opt_default_name, len(opts_default_name), toggle_default_name);
 
 }
 
@@ -376,11 +376,6 @@ static void toggle_post(menu_t *menu, int data) {
 
 static void toggle_screen_shake(menu_t *menu, int data) {
 	save.screen_shake = (float)data * 0.5;
-	save.is_dirty = true;
-}
-
-static void toggle_minimap(menu_t *menu, int data) {
-	save.minimap = data;
 	save.is_dirty = true;
 }
 
