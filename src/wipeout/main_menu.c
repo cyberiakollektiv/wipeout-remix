@@ -186,7 +186,7 @@ static void page_options_preferences_init(menu_t *menu) {
 	page->block_width = 320;
 	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
 
-	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_off_on, len(opts_minimap), toggle_minimap);
+	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_off_on, len(opts_off_on), toggle_minimap);
 	menu_page_add_toggle(page, save.look_style, "LOOK STYLE", opts_look_style, len(opts_look_style), toggle_look_style);
 	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_off_on, len(opts_off_on), toggle_weapons);
 	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", opts_default_view, len(opts_default_view), toggle_default_view);
