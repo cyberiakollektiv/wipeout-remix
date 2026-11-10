@@ -79,6 +79,11 @@ void camera_update_race_external_freecam(camera_t *camera, ship_t *ship, droid_t
 
     float rs_x = rs_right - rs_left;
 
+    // Invert left and right if camera_invert_x is enabled
+    if (save.camera_invert_x == 1) {
+        rs_x = -rs_x;
+    }
+
     if (rs_x < -0.15f || rs_x > 0.15f) {
         stick_yaw_offset -= rs_x * 0.04f;
         stick_active = true;
@@ -111,12 +116,6 @@ void camera_update_race_rear(camera_t *camera, ship_t *ship, droid_t *droid) {
 	camera->position = pos;
 
 	camera_look_at_point(camera, ship->position);
-}
-
-void camera_update_race_cockpit(camera_t *camera, ship_t *ship, droid_t *droid) { // The same as the attract mode cockpit view
-	camera->section = ship->section;
-	camera->position = ship_cockpit(ship);
-	camera->angle = vec3_mul(ship->angle, vec3(1,1,0)); // No roll
 }
 
 void camera_update_race_top_down(camera_t *camera, ship_t *ship, droid_t *droid) {
