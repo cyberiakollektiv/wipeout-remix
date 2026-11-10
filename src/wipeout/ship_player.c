@@ -145,6 +145,45 @@ void ship_player_update_intro_general(ship_t *self) {
         }
     }
 
+    static void (*last_camera_func)(camera_t *, ship_t *, droid_t *) = camera_update_race_external;
+
+    // View - Right Stick - Modern
+    if (save.rightstick_toggle != 1) {
+        if (input_state(A_LOOKLEFT)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_look_left;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (input_state(A_LOOKRIGHT)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_look_right;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (input_state(A_LOOKBACK)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_rear;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else {
+            if (g.camera.update_func == camera_update_race_look_left ||
+                g.camera.update_func == camera_update_race_look_right ||
+                g.camera.update_func == camera_update_race_rear) {
+                g.camera.update_func = last_camera_func;
+            }
+        }
+    }
 	ship_player_update_sfx(self);
 }
 
@@ -295,6 +334,46 @@ void ship_player_update_race(ship_t *self) {
         else {
             g.camera.update_func = external_func;
             flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+    }
+
+    static void (*last_camera_func)(camera_t *, ship_t *, droid_t *) = camera_update_race_external;
+
+    // View - Right Stick - Modern
+    if (save.rightstick_toggle != 1) {
+        if (input_state(A_LOOKLEFT)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_look_left;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (input_state(A_LOOKRIGHT)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_look_right;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else if (input_state(A_LOOKBACK)) {
+            if (g.camera.update_func != camera_update_race_look_left &&
+                g.camera.update_func != camera_update_race_look_right &&
+                g.camera.update_func != camera_update_race_rear) {
+                last_camera_func = g.camera.update_func;
+            }
+            g.camera.update_func = camera_update_race_rear;
+            flags_rm(self->flags, SHIP_VIEW_INTERNAL);
+        }
+        else {
+            if (g.camera.update_func == camera_update_race_look_left ||
+                g.camera.update_func == camera_update_race_look_right ||
+                g.camera.update_func == camera_update_race_rear) {
+                g.camera.update_func = last_camera_func;
+            }
         }
     }
 
