@@ -12,6 +12,7 @@
 #include "droid.h"
 #include "hud.h"
 #include "sfx.h"
+#include "rumble.h"
 #include "ui.h"
 #include "particle.h"
 #include "race.h"
