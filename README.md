@@ -20,6 +20,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
+- [ ] Add WO2 style "Preferences" menu with options such as default camera mode, default name, weapons on/off, etc)
 - [ ] FOV change during speed boost
 - [ ] Demo(?)
 - [ ] Custom soundtrack support
