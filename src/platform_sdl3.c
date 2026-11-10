@@ -76,6 +76,16 @@ SDL_Gamepad *platform_find_gamepad(void) {
     return NULL;
 }
 
+void platform_set_rumble(float strength) {
+    if (gamepad) {
+        if (strength <= 0.0f) {
+            SDL_RumbleGamepad(gamepad, 0, 0, 0);
+        } else {
+            uint16_t intensity = (uint16_t)(fminf(fmaxf(strength, 0.0f), 1.0f) * 0xFFFF);
+            SDL_RumbleGamepad(gamepad, intensity, intensity, 250);
+        }
+    }
+}
 
 void platform_pump_events(void) {
     SDL_Event ev;
