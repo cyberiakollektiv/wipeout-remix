@@ -157,17 +157,6 @@ static void toggle_look_style(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
-static void toggle_look_style(menu_t *menu, int data) {
-	save.look_style = data;
-	save.is_dirty = true;
-}
-
-static void toggle_look_style(menu_t *menu, int data) {
-	save.look_style = data;
-	save.is_dirty = true;
-}
-
-
 static void toggle_weapons(menu_t *menu, int data) {
 	save.weapons = data;
 	save.is_dirty = true;
@@ -182,6 +171,17 @@ static void toggle_camera_invert_y(menu_t *menu, int data) {
 	save.camera_invert_y = data;
 	save.is_dirty = true;
 }
+
+static void toggle_default_view(menu_t *menu, int data) {
+	save.default_view = data;
+	save.is_dirty = true;
+}
+
+static void toggle_default_name(menu_t *menu, int data) {
+	save.default_name = data;
+	save.is_dirty = true;
+}
+
 
 static const char *opts_minimap[] = {"OFF", "ON"};
 static const char *opts_weapons[] = {"OFF", "ON"};
