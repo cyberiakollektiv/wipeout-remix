@@ -82,25 +82,12 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
         return;
     }
 
-    // Default external camera
-    vec3_t pos = vec3_transform(vec3(0,0,-1024), &ship->mat);
+    vec3_t pos = vec3_transform(vec3(0, 0, -1024), &ship->mat);
     pos.y -= 200;
 
-    camera->section = track_nearest_section(pos, vec3(1,1,1), camera->section, NULL);
-    section_t *next = camera->section->next;
-
-    vec3_t target = vec3_project_to_ray(pos, next->center, camera->section->center);
-
-    vec3_t diff_from_center = vec3_sub(pos, target);
-    vec3_t acc = diff_from_center;
-    acc.y += vec3_len(diff_from_center) * 0.5;
-
-    camera->velocity = vec3_sub(camera->velocity, vec3_mulf(acc, 0.015625 * 30 * system_tick()));
-    camera->velocity = vec3_sub(camera->velocity, vec3_mulf(camera->velocity, 0.125 * 30 * system_tick()));
-    pos = vec3_add(pos, camera->velocity);
-
+    camera->section = track_nearest_section(pos, vec3(1, 1, 1), ship->section, NULL);
     camera->position = pos;
-    camera->angle = vec3_mul(ship->angle, vec3(1,1,0));
+    camera->angle = vec3_mul(ship->angle, vec3(1, 1, 0));
 }
 
 void camera_update_race_external_freecam(camera_t *camera, ship_t *ship, droid_t *droid) {
