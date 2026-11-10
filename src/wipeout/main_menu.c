@@ -157,24 +157,37 @@ static void toggle_look_style(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_look_style(menu_t *menu, int data) {
+	save.look_style = data;
+	save.is_dirty = true;
+}
+
+static void toggle_look_style(menu_t *menu, int data) {
+	save.look_style = data;
+	save.is_dirty = true;
+}
+
+
 static void toggle_weapons(menu_t *menu, int data) {
 	save.weapons = data;
 	save.is_dirty = true;
 }
 
-static void toggle_default_view(menu_t *menu, int data) {
-	save.default_view = data;
+static void toggle_camera_invert_x(menu_t *menu, int data) {
+	save.camera_invert_x = data;
 	save.is_dirty = true;
 }
 
-static void toggle_default_name(menu_t *menu, int data) {
-	save.default_name = data;
+static void toggle_camera_invert_y(menu_t *menu, int data) {
+	save.camera_invert_y = data;
 	save.is_dirty = true;
 }
 
 static const char *opts_minimap[] = {"OFF", "ON"};
 static const char *opts_weapons[] = {"OFF", "ON"};
 static const char *opts_look_style[] = {"CLASSIC", "MODERN"};
+static const char *opts_camera_invert_x[] = {"DEFAULT", "INVERTED"};
+static const char *opts_camera_invert_y[] = {"DEFAULT", "INVERTED"};
 static const char *opts_default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
 static const char *opts_default_name[] = {"JOD", "DAC", "ART", "ANC", "KES", "ART", "SDR", "PAJ"}; // Temporary default name switch using abbreviated pilot names, need to change this to actual player input
 
@@ -189,6 +202,8 @@ static void page_options_preferences_init(menu_t *menu) {
 
 	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_minimap, len(opts_minimap), toggle_minimap);
 	menu_page_add_toggle(page, save.look_style, "LOOK STYLE", opts_look_style, len(opts_look_style), toggle_look_style);
+	menu_page_add_toggle(page, save.camera_invert_x, "HORIZONTAL AXIS", opts_camera_invert_x, len(opts_camera_invert_x), toggle_camera_invert_x);
+	menu_page_add_toggle(page, save.camera_invert_y, "VERTICAL AXIS", opts_camera_invert_y, len(opts_camera_invert_y), toggle_camera_invert_y);
 	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_weapons, len(opts_weapons), toggle_weapons);
 	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", opts_default_view, len(opts_default_view), toggle_default_view);
 	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opts_default_name, len(opts_default_name), toggle_default_name);
