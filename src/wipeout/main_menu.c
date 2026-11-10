@@ -172,7 +172,8 @@ static void toggle_default_name(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
-static const char *opts_off_on[] = {"OFF", "ON"};
+static const char *opts_minimap[] = {"OFF", "ON"};
+static const char *opts_weapons[] = {"OFF", "ON"};
 static const char *opts_look_style[] = {"CLASSIC", "MODERN"};
 static const char *opts_default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
 static const char *opts_default_name[] = {"JOD", "DAC", "ART", "ANC", "KES", "ART", "SDR", "PAJ"}; // Temporary default name switch using abbreviated pilot names, need to change this to actual player input
@@ -186,9 +187,9 @@ static void page_options_preferences_init(menu_t *menu) {
 	page->block_width = 320;
 	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
 
-	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_off_on, len(opts_off_on), toggle_minimap);
+	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_minimap, len(opts_minimap), toggle_minimap);
 	menu_page_add_toggle(page, save.look_style, "LOOK STYLE", opts_look_style, len(opts_look_style), toggle_look_style);
-	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_off_on, len(opts_off_on), toggle_weapons);
+	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_weapons, len(opts_weapons), toggle_weapons);
 	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", opts_default_view, len(opts_default_view), toggle_default_view);
 	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opts_default_name, len(opts_default_name), toggle_default_name);
 
@@ -380,6 +381,7 @@ static void toggle_screen_shake(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static const char *opts_off_on[] = {"OFF", "ON"};
 static const char *opts_roll[] = {"0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
 static const char *opts_ui_sizes[] = {"AUTO", "1X", "2X", "3X", "4X"};
 static const char *opts_draw_stats[] = {"OFF", "FPS", "DEBUG"};
