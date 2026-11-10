@@ -119,7 +119,7 @@ void ship_player_update_intro_general(ship_t *self) {
 	// View
 	if (input_pressed(A_CHANGE_VIEW)) {
         void (*external_func)(camera_t *, ship_t *, droid_t *) = 
-            (save.modern_camera == 1) ? camera_update_race_external_freecam : camera_update_race_external;
+            (save.look_style == 1) ? camera_update_race_external_freecam : camera_update_race_external;
 
         if (g.camera.update_func == external_func || 
             g.camera.update_func == camera_update_race_external || 
@@ -311,7 +311,7 @@ void ship_player_update_race(ship_t *self) {
 	// View
 	if (input_pressed(A_CHANGE_VIEW)) {
         void (*external_func)(camera_t *, ship_t *, droid_t *) = 
-            (save.modern_camera == 1) ? camera_update_race_external_freecam : camera_update_race_external;
+            (save.look_style == 1) ? camera_update_race_external_freecam : camera_update_race_external;
 
         if (g.camera.update_func == external_func || 
             g.camera.update_func == camera_update_race_external || 
