@@ -14,20 +14,20 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
 - [x] New camera angles (cockpit view, top-down view) as well as "modern camera" and "classic camera" look modes for the right analog stick / mouse!
 - [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
+- [x] Vibration (thanks Mayo1970!) 
 
 # Partially Working:
 
 # Planned:
-- [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
 - [ ] Add WO2 style "Preferences" menu with options such as default camera mode, default name, weapons on/off, etc)
 - [ ] FOV change during speed boost
-- [ ] Demo(?)
+- [ ] Demo builds(?)
 - [ ] Custom soundtrack support
 - [ ] Saturn port + Wipeout 2097 + 3 soundtrack support
 - [ ] Wipeout 2097 + 64 track support in single races
 - [ ] Integrate SDL1 + OpenGL 1.x patches from wipeout-sdl1 so wipeout-rewrite can be compiled on all versions of SDL/OpenGL from one repo(?)
-- [ ] Vulkan/Metal renderers(?)
+- [ ] Vulkan/Metal renderers
 - [ ] De-spaghettification of the struct-based savegame system via cJSON
 
 # Credits:
