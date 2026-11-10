@@ -47,24 +47,60 @@ void camera_update(camera_t *camera, ship_t *ship, droid_t *droid) {
 }
 
 void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid) {
-	vec3_t pos = vec3_transform(vec3(0,0,-1024), &ship->mat);
-	pos.y -= 200;
+    bool look_left = input_state(A_LOOKLEFT);
+    bool look_right = input_state(A_LOOKRIGHT);
 
-	camera->section = track_nearest_section(pos, vec3(1,1,1), camera->section, NULL);
-	section_t *next = camera->section->next;
+    if (save.camera_invert_x == 1) {
+        bool temp = look_left;
+        look_left = look_right;
+        look_right = temp;
+    }
 
-	vec3_t target = vec3_project_to_ray(pos, next->center, camera->section->center);
+    if (look_left) {
+        camera->section = ship->section;
+        vec3_t offset = vec3(-350, -50, -100);
+        camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
+        camera_look_at_point(camera, ship->position);
+        return;
+    }
+    
+    if (look_right) {
+        camera->section = ship->section;
+        vec3_t offset = vec3(350, -50, -100);
+        camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
+        camera_look_at_point(camera, ship->position);
+        return;
+    }
 
-	vec3_t diff_from_center = vec3_sub(pos, target);
-	vec3_t acc = diff_from_center;
-	acc.y += vec3_len(diff_from_center) * 0.5;
+    if (input_state(A_LOOKBACK)) {
+        vec3_t pos = vec3_transform(vec3(0, 50, 1024), &ship->mat);
+        pos.y -= 200;
 
-	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(acc, 0.015625 * 30 * system_tick()));
-	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(camera->velocity, 0.125 * 30 * system_tick()));
-	pos = vec3_add(pos, camera->velocity);
+        camera->section = track_nearest_section(pos, vec3(1,1,1), ship->section, NULL);
+        camera->position = pos;
+        camera_look_at_point(camera, ship->position);
+        return;
+    }
 
-	camera->position = pos;
-	camera->angle = vec3_mul(ship->angle, vec3(1,1,0));
+    // Default external camera
+    vec3_t pos = vec3_transform(vec3(0,0,-1024), &ship->mat);
+    pos.y -= 200;
+
+    camera->section = track_nearest_section(pos, vec3(1,1,1), camera->section, NULL);
+    section_t *next = camera->section->next;
+
+    vec3_t target = vec3_project_to_ray(pos, next->center, camera->section->center);
+
+    vec3_t diff_from_center = vec3_sub(pos, target);
+    vec3_t acc = diff_from_center;
+    acc.y += vec3_len(diff_from_center) * 0.5;
+
+    camera->velocity = vec3_sub(camera->velocity, vec3_mulf(acc, 0.015625 * 30 * system_tick()));
+    camera->velocity = vec3_sub(camera->velocity, vec3_mulf(camera->velocity, 0.125 * 30 * system_tick()));
+    pos = vec3_add(pos, camera->velocity);
+
+    camera->position = pos;
+    camera->angle = vec3_mul(ship->angle, vec3(1,1,0));
 }
 
 void camera_update_race_external_freecam(camera_t *camera, ship_t *ship, droid_t *droid) {
@@ -127,24 +163,6 @@ void camera_update_race_top_down(camera_t *camera, ship_t *ship, droid_t *droid)
 	camera->position = pos;
 	
 	camera->angle = vec3(-(M_PI / 2.0f), ship->angle.y, 0);
-}
-
-void camera_update_race_look_left(camera_t *camera, ship_t *ship, droid_t *droid) {
-	camera->section = ship->section;
-	
-	vec3_t offset = vec3(-350, -50, -100);
-	camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
-	
-	camera_look_at_point(camera, ship->position);
-}
-
-void camera_update_race_look_right(camera_t *camera, ship_t *ship, droid_t *droid) {
-	camera->section = ship->section;
-	
-	vec3_t offset = vec3(350, -50, -100);
-	camera->position = vec3_add(ship->position, vec3_transform(offset, &ship->mat));
-	
-	camera_look_at_point(camera, ship->position);
 }
 
 void camera_update_race_internal(camera_t *camera, ship_t *ship, droid_t *droid) {
