@@ -286,14 +286,18 @@ typedef struct {
 	int post_effect;
 	float screen_shake;
 
+	// WO2097-style preferences options
+	bool minimap;
+	bool modern_camera;
+	bool weapons;
+	bool default_view;
+	bool default_name;
+
 	// Modern controller options
 	bool vibration_toggle;
 	bool rightstick_toggle;
-	bool modern_camera;
 	bool rs_invert_x;
 	bool rs_invert_y;
-	bool minimap;
-
 
 	uint32_t has_rapier_class;
 	uint32_t has_bonus_circuits;
