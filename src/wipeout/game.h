@@ -296,8 +296,8 @@ typedef struct {
 	// Modern controller options
 	bool vibration_toggle;
 	bool rightstick_toggle;
-	bool rs_invert_x;
-	bool rs_invert_y;
+	bool camera_invert_x;
+	bool camera_invert_y;
 
 	uint32_t has_rapier_class;
 	uint32_t has_bonus_circuits;
