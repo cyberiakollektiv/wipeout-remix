@@ -10,6 +10,7 @@
 #include "image.h"
 #include "particle.h"
 #include "camera.h"
+#include "rumble.h"
 
 typedef struct weapon_t {
 	float timer;
