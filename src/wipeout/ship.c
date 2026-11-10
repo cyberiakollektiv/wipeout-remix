@@ -11,6 +11,7 @@
 #include "game.h"
 #include "race.h"
 #include "sfx.h"
+#include "rumble.h"
 
 int engine_flag_compare(const void *a, const void *b) {
 	primitive_t prm1 = *(primitive_t *)a;
