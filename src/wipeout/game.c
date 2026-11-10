@@ -599,8 +599,8 @@ save_t save = {
 	.minimap = true, // False disables minimap
 	.modern_camera = true, // False enables "classic look"
 	.weapons = true, // Enable / disable weapons in races
-	.default_view = EXTERNAL, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
-	.default_name = ART, // Default player name
+	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
+	.default_name = 0, // Default player name
 
 	// New controller options
 	.vibration_toggle = true,
