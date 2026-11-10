@@ -103,6 +103,10 @@ static void button_controls(menu_t *menu, int data) {
 	page_options_controls_init(menu);
 }
 
+static void button_preferences(menu_t *menu, int data) {
+	page_options_preferences_init(menu);
+}
+
 static void button_video(menu_t *menu, int data) {
 	page_options_video_init(menu);
 }
@@ -119,8 +123,9 @@ static void page_options_draw(menu_t *menu, int data) {
 	switch (data) {
 		case 0: draw_model(models.controller, vec2(0, -0.1), vec3(0, 0, -6000), system_cycle_time()); break;
 		case 1: draw_model(models.rescue, vec2(0, -0.2), vec3(0, 0, -700), system_cycle_time()); break; // TODO: needs better model
-		case 2: draw_model(models.options.headphones, vec2(0, -0.2), vec3(0, 0, -300), system_cycle_time()); break;
-		case 3: draw_model(models.options.stopwatch, vec2(0, -0.2), vec3(0, 0, -400), system_cycle_time()); break;
+		case 2: draw_model(models.rescue, vec2(0, -0.2), vec3(0, 0, -700), system_cycle_time()); break; // TODO: needs better model
+		case 3: draw_model(models.options.headphones, vec2(0, -0.2), vec3(0, 0, -300), system_cycle_time()); break;
+		case 4: draw_model(models.options.stopwatch, vec2(0, -0.2), vec3(0, 0, -400), system_cycle_time()); break;
 	}
 }
 
@@ -132,11 +137,61 @@ static void page_options_init(menu_t *menu) {
 	page->items_pos = vec2i(0, -110);
 	page->items_anchor = UI_POS_BOTTOM | UI_POS_CENTER;
 	menu_page_add_button(page, 0, "CONTROLS", button_controls);
-	menu_page_add_button(page, 1, "VIDEO", button_video);
-	menu_page_add_button(page, 2, "AUDIO", button_audio);
-	menu_page_add_button(page, 3, "BEST TIMES", button_highscores);
+	menu_page_add_button(page, 1, "PREFERENCES", button_preferences);
+	menu_page_add_button(page, 2, "VIDEO", button_video);
+	menu_page_add_button(page, 3, "AUDIO", button_audio);
+	menu_page_add_button(page, 4, "BEST TIMES", button_highscores);
 }
 
+// -----------------------------------------------------------------------------
+// Options Preferences - Wipeout XL/2097 style Preferences menu
+
+static void toggle_minimap(menu_t *menu, int data) {
+	save.minimap = data;
+	save.is_dirty = true;
+}
+
+static void toggle_modern_camera(menu_t *menu, int data) {
+	save.modern_camera = data;
+	save.is_dirty = true;
+}
+
+static void toggle_weapons(menu_t *menu, int data) {
+	save.weapons = data;
+	save.is_dirty = true;
+}
+
+static void toggle_default_view(menu_t *menu, int data) {
+	save.default_view = data;
+	save.is_dirty = true;
+}
+
+static void toggle_default_name(menu_t *menu, int data) {
+	save.default_name = data;
+	save.is_dirty = true;
+}
+
+static const char *opts_off_on[] = {"OFF", "ON"};
+static const char *modern_camera[] = {"CLASSIC", "MODERN"};
+static const char *default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
+static const char *default_name[] = {"JOD", "DAC", "ART", "ANC", "KES", "ART", "SDR", "PAJ"}; // Temporary default name switch using abbreviated pilot names, need to change this to actual player input
+
+static void page_options_preferences_init(menu_t *menu) {
+	menu_page_t *page = menu_push(menu, "PREFERENCES", NULL);
+	flags_set(page->layout_flags, MENU_VERTICAL | MENU_FIXED);
+	page->title_pos = vec2i(-160, -100);
+	page->title_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
+	page->items_pos = vec2i(-160, -60);
+	page->block_width = 320;
+	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
+
+	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_off_on, len(opts_minimap), toggle_minimap);
+	menu_page_add_toggle(page, save.modern_camera, "LOOK STYLE", modern_camera, len(modern_camera), toggle_modern_camera);
+	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_off_on, len(opts_off_on), toggle_weapons);
+	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", default_view, len(default_view), toggle_default_view);
+	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opts_default_name, len(opts_default_name), toggle_default_name);
+
+}
 
 // -----------------------------------------------------------------------------
 // Options Controls
@@ -251,15 +306,9 @@ static void toggle_vibration_toggle(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
-static void toggle_modern_camera(menu_t *menu, int data) {
-	save.modern_camera = data;
-	save.is_dirty = true;
-}
-
 static const char *analog_response[] = {"LINEAR", "MODERATE", "HEAVY"};
 static const char *r_analog_response[] = {"LINEAR", "MODERATE", "HEAVY"};
 static const char *vibration_options[] = {"OFF", "ON"};
-static const char *modern_camera[] = {"CLASSIC", "MODERN"};
 
 static void page_options_controls_init(menu_t *menu) {
 	menu_page_t *page = menu_push(menu, "CONTROLS", page_options_control_draw);
@@ -286,7 +335,6 @@ static void page_options_controls_init(menu_t *menu) {
 	menu_page_add_button(page, A_LOOKBACK, "LOOK BEHIND", page_options_controls_set_init);
 
 	menu_page_add_toggle(page, save.vibration_toggle, "VIBRATION", vibration_options, len(vibration_options), toggle_vibration_toggle);
-	menu_page_add_toggle(page, save.modern_camera, "LOOK STYLE", modern_camera, len(modern_camera), toggle_modern_camera);
 	menu_page_add_toggle(page, save.analog_response - 1, "LEFT ANALOG RESPONSE", analog_response, len(analog_response), toggle_analog_response);
 	menu_page_add_toggle(page, save.r_analog_response - 1, "RIGHT ANALOG RESPONSE", r_analog_response, len(r_analog_response), toggle_r_analog_response);}
 
