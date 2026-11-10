@@ -595,11 +595,16 @@ save_t save = {
 	.screen_res = 0,
 	.post_effect = 0,
 
+	// New preferences options
+	.minimap = true, // False disables minimap
+	.modern_camera = true, // False enables "classic look"
+	.weapons = true, // Enable / disable weapons in races
+	.default_view = "EXTERNAL", // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
+	.default_name = "ART", // Default player name
+
 	// New controller options
 	.vibration_toggle = true,
 	.rightstick_toggle = true,
-	.modern_camera = true, // False enables classic look
-	.minimap = true, // False enables classic look
 
 	.has_rapier_class = true,  // for testing; should be false in prod
 	.has_bonus_circuits = true, // for testing; should be false in prod
