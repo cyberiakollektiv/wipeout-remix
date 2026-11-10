@@ -605,6 +605,8 @@ save_t save = {
 	// New controller options
 	.vibration_toggle = true,
 	.rightstick_toggle = true,
+	.camera_invert_x = false,
+	.camera_invert_y = false,
 
 	.has_rapier_class = true,  // for testing; should be false in prod
 	.has_bonus_circuits = true, // for testing; should be false in prod
