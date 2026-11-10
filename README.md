@@ -19,6 +19,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 
 # Planned:
 - [x] Vibration (requires linking vibration in platform_sdl3 to ship collision/firing events in ship.c, ship_player.c, and weapons.c)
+- [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
 - [ ] FOV change during speed boost
 - [ ] Demo(?)
 - [ ] Custom soundtrack support
@@ -31,6 +32,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Credits:
 - Dave Gamble - cJSON (JSON implementation)
 - unofficial-fish - Ship alpha bleed & mine lights fixes
+- Mayo1970 - 2P splitscreen code + vibration code
 
 Original README below.
 
