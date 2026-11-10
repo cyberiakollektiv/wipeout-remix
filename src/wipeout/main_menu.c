@@ -347,9 +347,6 @@ static void page_options_controls_init(menu_t *menu) {
 	menu_page_add_button(page, A_THRUST, "THRUST", page_options_controls_set_init);
 	menu_page_add_button(page, A_FIRE, "FIRE", page_options_controls_set_init);
 	menu_page_add_button(page, A_CHANGE_VIEW, "VIEW", page_options_controls_set_init);
-	menu_page_add_button(page, A_LOOKLEFT, "LOOK LEFT", page_options_controls_set_init);
-	menu_page_add_button(page, A_LOOKRIGHT, "LOOK RIGHT", page_options_controls_set_init);
-	menu_page_add_button(page, A_LOOKBACK, "LOOK BEHIND", page_options_controls_set_init);
 
 	menu_page_add_toggle(page, save.vibration_toggle, "VIBRATION", vibration_options, len(vibration_options), toggle_vibration_toggle);
 	menu_page_add_toggle(page, save.analog_response - 1, "LEFT ANALOG RESPONSE", analog_response, len(analog_response), toggle_analog_response);
