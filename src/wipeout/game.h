@@ -223,7 +223,7 @@ typedef struct {
 	int ship_model_to_pilot[NUM_PILOTS];
 	int race_points_for_rank[NUM_PILOTS];
 	music_track_t music[NUM_MUSIC_TRACKS];
-	music_track_2_t music_xl[NUM_MUSIC_TRACKS];
+	music_track_xl_t music_xl[NUM_MUSIC_TRACKS];
 	music_track_3_t music_3[NUM_MUSIC_TRACKS];
 	music_track_64_t music_64[NUM_MUSIC_TRACKS_64];
 	char *credits[104];
