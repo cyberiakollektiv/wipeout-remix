@@ -201,7 +201,7 @@ typedef struct {
 typedef struct {
 	char *path;
 	char *name;
-} music_track_2_t;
+} music_track_xl_t;
 
 typedef struct {
 	char *path;
