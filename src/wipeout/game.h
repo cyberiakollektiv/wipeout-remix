@@ -255,6 +255,7 @@ typedef struct {
 	track_t track;
 
 	bool additional_circuits;
+	bool additional_soundtracks;
 	bool installed_circuits[NUM_CIRCUITS];
 } game_t;
 
