@@ -942,8 +942,7 @@ void game_init(void) {
 	global_mem_mark = mem_mark();
 
 	sfx_music_mode(SFX_MUSIC_PAUSED);
-	sfx_music_play(rand_int(0, len(def.music)));
-
+	sfx_music_play(rand_int(0, len(def.music)), MUSIC_PLAYLIST_WIPEOUT);
 
 	// System binds; always fixed
 	// Keyboard
