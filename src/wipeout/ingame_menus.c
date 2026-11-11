@@ -103,7 +103,7 @@ static void button_music_track(menu_t *menu, int data) {
 }
 
 static void button_music_xl(menu_t *menu, int data) {
-	menu_page_t *page = menu_push(menu, "WIPEOUT 2097", NULL);
+	menu_page_t *page = menu_push(menu, "WIPEOUT XL", NULL);
 
 	for (int i = 0; i < len(def.music); i++) {
 		menu_page_add_button(page, i, def.music_xl[i].name, button_music_track_xl);
@@ -135,7 +135,7 @@ static void button_music_64(menu_t *menu, int data) {
 }
 
 static void button_music(menu_t *menu, int data) {
-	menu_page_t *page = menu_push(menu, "MUSIC", NULL);
+	menu_page_t *page = menu_push(menu, "WIPEOUT", NULL);
 
 	for (int i = 0; i < len(def.music); i++) {
 		menu_page_add_button(page, i, def.music[i].name, button_music_track);
