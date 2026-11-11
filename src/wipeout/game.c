@@ -396,7 +396,7 @@ const game_def_t def = {
 		{.path = "wipeout2/music/track13.qoa", .name = "PETROL"},
 		{.path = "wipeout2/music/track14.qoa", .name = "AFRO RIDE"},
 	},
-	.music_3 = { // Not complete
+	.music_3 = {
 		{.path = "wipeout3/music/track01.qoa", .name = "FEISAR"},
 		{.path = "wipeout3/music/track02.qoa", .name = "KITTENS"},
 		{.path = "wipeout3/music/track03.qoa", .name = "ICARAS"},
@@ -411,7 +411,7 @@ const game_def_t def = {
 		{.path = "wipeout3/music/track12.qoa", .name = "AVENUE"},
 		{.path = "wipeout3/music/track13.qoa", .name = "XPANDER"},
 	},
-	.music_64 = { // Not sure if 64 uses separate soundtrack files yet
+	.music_64 = {
 		{.path = "wipeout64/music/track01.qoa", .name = "FEISAR"},
 		{.path = "wipeout64/music/track02.qoa", .name = "KITTENS"},
 		{.path = "wipeout64/music/track03.qoa", .name = "ICARAS"},
@@ -645,6 +645,7 @@ save_t save = {
 	// New preferences options
 	.minimap = true, // False disables minimap
 	.look_style = true, // False enables "classic look"
+	.hud_style = 0, // False enables "classic look"
 	.weapons = true, // Enable / disable weapons in races
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
 	.default_name = 0, // Default player name
@@ -667,9 +668,9 @@ save_t save = {
 		[A_BRAKE_RIGHT] = {INPUT_KEY_V, INPUT_GAMEPAD_R_SHOULDER},
 		[A_THRUST] = {INPUT_KEY_X, INPUT_GAMEPAD_A},
 		[A_FIRE] = {INPUT_KEY_Z, INPUT_GAMEPAD_X},
-//		[A_LOOKLEFT] = {INPUT_KEY_Q, INPUT_GAMEPAD_R_STICK_LEFT}, // Modern control update
-//		[A_LOOKRIGHT] = {INPUT_KEY_E, INPUT_GAMEPAD_R_STICK_RIGHT}, // Modern control update
-//		[A_LOOKBACK] = {INPUT_KEY_R, INPUT_GAMEPAD_R_STICK_DOWN}, // Modern control update
+		[A_LOOKLEFT] = {INPUT_KEY_Q, INPUT_GAMEPAD_R_STICK_LEFT}, // Modern control update
+		[A_LOOKRIGHT] = {INPUT_KEY_E, INPUT_GAMEPAD_R_STICK_RIGHT}, // Modern control update
+		[A_LOOKBACK] = {INPUT_KEY_R, INPUT_GAMEPAD_R_STICK_DOWN}, // Modern control update
 		[A_CHANGE_VIEW] = {INPUT_KEY_A, INPUT_GAMEPAD_Y},
 	},
 	.analog_response = 2, // Exponent for stick turn input
