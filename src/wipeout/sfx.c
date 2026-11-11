@@ -21,6 +21,7 @@ typedef struct {
 	FILE *file;
 
 	uint32_t track_index;
+	music_playlist_t playlist;
 	uint32_t first_frame_pos;
 
 	uint32_t buffer_len;
@@ -61,9 +62,9 @@ void sfx_load(void) {
 	music->qoa.channels = channels;
 	music->mode = SFX_MUSIC_RANDOM;
 	music->file = NULL;
-	music->track_index = -1;
-
-
+	music->track_index = UINT32_MAX;
+	music->playlist = MUSIC_PLAYLIST_WIPEOUT;
+	
 	// Load SFX samples
 	nodes = mem_bump(SFX_MAX * sizeof(sfx_t));
 
@@ -95,7 +96,7 @@ void sfx_load(void) {
 				(vb[p] & 0xf0) <<  8
 			};
 			p++;
-
+ 
 			for (int ni = 0; ni < 2; ni++) {
 				int32_t sample = nibbles[ni];
 				if (sample & 0x8000) {
@@ -226,7 +227,6 @@ void sfx_set_position(sfx_t *sfx, vec3_t pos, vec3_t vel, float volume) {
 
 
 
-
 // Music
 
 uint32_t sfx_music_decode_frame(void) {
@@ -248,7 +248,37 @@ void sfx_music_rewind(void) {
 	music->sample_data_pos = 0;
 }
 
-void sfx_music_open(char *path) {
+static uint32_t sfx_music_playlist_len(music_playlist_t playlist) {
+	switch (playlist) {
+		case MUSIC_PLAYLIST_WIPEOUT: return len(def.music);
+		case MUSIC_PLAYLIST_XL:      return len(def.music_xl);
+		case MUSIC_PLAYLIST_3:       return len(def.music_3);
+		case MUSIC_PLAYLIST_64:      return len(def.music_64);
+		default:                     return 0;
+	}
+}
+
+static const char *sfx_music_path_for(music_playlist_t playlist, uint32_t index) {
+	switch (playlist) {
+		case MUSIC_PLAYLIST_WIPEOUT: return def.music[index].path;
+		case MUSIC_PLAYLIST_XL:      return def.music_xl[index].path;
+		case MUSIC_PLAYLIST_3:       return def.music_3[index].path;
+		case MUSIC_PLAYLIST_64:      return def.music_64[index].path;
+		default:                     return NULL;
+	}
+}
+
+static const char *sfx_music_name_for(music_playlist_t playlist, uint32_t index) {
+	switch (playlist) {
+		case MUSIC_PLAYLIST_WIPEOUT: return def.music[index].name;
+		case MUSIC_PLAYLIST_XL:      return def.music_xl[index].name;
+		case MUSIC_PLAYLIST_3:       return def.music_3[index].name;
+		case MUSIC_PLAYLIST_64:      return def.music_64[index].name;
+		default:                     return "";
+	}
+}
+
+void sfx_music_open(const char *path) {
 	if (music->file) {
 		fclose(music->file);
 		music->file = NULL;
@@ -286,23 +316,25 @@ void sfx_music_open(char *path) {
 	music->sample_data_pos = 0;
 }
 
-void sfx_music_play(uint32_t index) {
-	error_if(index >= len(def.music), "Invalid music index");
-	if (index == music->track_index) {
+void sfx_music_play(uint32_t index, music_playlist_t playlist) {
+	uint32_t track_count = sfx_music_playlist_len(playlist);
+	error_if(index >= track_count, "Invalid music index");
+
+	if (index == music->track_index && playlist == music->playlist) {
 		sfx_music_rewind();
 		return;
 	}
 
-	printf("open music track %s\n", def.music[index].name);
+	printf("open music track %s\n", sfx_music_name_for(playlist, index));
 
+	music->playlist = playlist;
 	music->track_index = index;
-	sfx_music_open(def.music[index].path);
+	sfx_music_open(sfx_music_path_for(playlist, index));
 }
 
 void sfx_music_mode(sfx_music_mode_t mode) {
 	music->mode = mode;
 }
-
 
 
 
@@ -372,10 +404,10 @@ void sfx_stereo_mix(float *buffer, uint32_t len) {
 			if (music->sample_data_len - music->sample_data_pos == 0) {
 				if (!sfx_music_decode_frame()) {
 					if (music->mode == SFX_MUSIC_RANDOM) {
-						sfx_music_play(rand_int(0, len(def.music)));
+						sfx_music_play(rand_int(0, sfx_music_playlist_len(music->playlist)), music->playlist);
 					}
 					else if (music->mode == SFX_MUSIC_SEQUENTIAL) {
-						sfx_music_play((music->track_index + 1) % len(def.music));
+						sfx_music_play((music->track_index + 1) % sfx_music_playlist_len(music->playlist), music->playlist);
 					}
 					else if (music->mode == SFX_MUSIC_LOOP) {
 						sfx_music_rewind();
