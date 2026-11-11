@@ -77,8 +77,15 @@ typedef enum {
 	SFX_MUSIC_LOOP
 } sfx_music_mode_t;
 
+typedef enum {
+	MUSIC_PLAYLIST_WIPEOUT,
+	MUSIC_PLAYLIST_XL,
+	MUSIC_PLAYLIST_3,
+	MUSIC_PLAYLIST_64
+} music_playlist_t;
+
 void sfx_music_next(void);
-void sfx_music_play(uint32_t index);
+void sfx_music_play(uint32_t index, music_playlist_t playlist);
 void sfx_music_mode(sfx_music_mode_t);
 void sfx_music_pause(void);
 
