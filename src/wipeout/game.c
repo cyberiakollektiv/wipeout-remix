@@ -898,7 +898,7 @@ void game_init(void) {
 		g.additional_circuits = true;
 	}
 
-	if (platform_asset_exists("wipeout2/music/") || platform_asset_exists("wipeout64/music/")) {
+	if (platform_asset_exists("wipeout2/music/") || platform_asset_exists("wipeout64/music/") || platform_asset_exists("wipeout3/music/")){
  	       g.additional_soundtracks = true;
 	}
 	
