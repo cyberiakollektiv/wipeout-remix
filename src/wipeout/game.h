@@ -198,6 +198,21 @@ typedef struct {
 } music_track_t;
 
 typedef struct {
+	char *path;
+	char *name;
+} music_track_2_t;
+
+typedef struct {
+	char *path;
+	char *name;
+} music_track_3_t;
+
+typedef struct {
+	char *path;
+	char *name;
+} music_track_64_t;
+
+typedef struct {
 	race_class_t race_classes[NUM_RACE_CLASSES];
 	race_type_t race_types[NUM_RACE_TYPES];
 	pilot_t pilots[NUM_PILOTS];
@@ -207,6 +222,9 @@ typedef struct {
 	int ship_model_to_pilot[NUM_PILOTS];
 	int race_points_for_rank[NUM_PILOTS];
 	music_track_t music[NUM_MUSIC_TRACKS];
+	music_track_2_t music_2097[NUM_MUSIC_TRACKS];
+	music_track_3_t music_3[NUM_MUSIC_TRACKS];
+	music_track_64_t music_64[NUM_MUSIC_TRACKS];
 	char *credits[104];
 	struct {
 		char *venom[15];
