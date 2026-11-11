@@ -152,6 +152,11 @@ static void toggle_minimap(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_hud_style(menu_t *menu, int data) {
+	save.hud_style = data;
+	save.is_dirty = true;
+}
+
 static void toggle_look_style(menu_t *menu, int data) {
 	save.look_style = data;
 	save.is_dirty = true;
@@ -182,10 +187,10 @@ static void toggle_default_name(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
-
 static const char *opts_minimap[] = {"OFF", "ON"};
-static const char *opts_weapons[] = {"OFF", "ON"};
+static const char *opts_weapons[] = {"OFF", "ON", "ON (XL)"};
 static const char *opts_look_style[] = {"CLASSIC", "MODERN"};
+static const char *opts_hud_style[] = {"WIPEOUT", "XL", "64"};
 static const char *opts_camera_invert_x[] = {"DEFAULT", "INVERTED"};
 static const char *opts_camera_invert_y[] = {"DEFAULT", "INVERTED"};
 static const char *opts_default_view[] = {"INTERNAL", "EXTERNAL", "COCKPIT", "TOP-DOWN"};
@@ -201,6 +206,7 @@ static void page_options_preferences_init(menu_t *menu) {
 	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
 
 	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_minimap, len(opts_minimap), toggle_minimap);
+	menu_page_add_toggle(page, save.minimap, "HUD STYLE", opts_hud_style, len(opts_hud_style), toggle_hud_style);
 	menu_page_add_toggle(page, save.look_style, "LOOK STYLE", opts_look_style, len(opts_look_style), toggle_look_style);
 	menu_page_add_toggle(page, save.camera_invert_x, "HORIZONTAL AXIS", opts_camera_invert_x, len(opts_camera_invert_x), toggle_camera_invert_x);
 	menu_page_add_toggle(page, save.camera_invert_y, "VERTICAL AXIS", opts_camera_invert_y, len(opts_camera_invert_y), toggle_camera_invert_y);
