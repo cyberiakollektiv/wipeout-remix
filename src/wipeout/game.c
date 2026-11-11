@@ -851,6 +851,11 @@ void game_init(void) {
 	if (platform_asset_exists("wipeout2/track01/") || platform_asset_exists("wipeout64/track01/")) {
 		g.additional_circuits = true;
 	}
+
+	if (platform_asset_exists("wipeout2/music/") || platform_asset_exists("wipeout64/music/")) {
+ 	       g.additional_soundtracks = true;
+	}
+	
 	printf("installed circuits:");
 	for (int i = 0; i < len(def.circuits); i++) {
 		g.installed_circuits[i] = true;
