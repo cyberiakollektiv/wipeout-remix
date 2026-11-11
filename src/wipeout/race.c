@@ -27,6 +27,25 @@ static bool has_show_credits = false;
 static float attract_start_time;
 static menu_t *active_menu = NULL;
 
+static void race_start_music(void) {
+	switch (def.circuits[g.circuit].release) {
+		case GAME_WIPEOUT_2097:
+			sfx_music_play(rand_int(0, len(def.music_xl)), MUSIC_PLAYLIST_XL);
+			break;
+
+		case GAME_WIPEOUT_64:
+			sfx_music_play(rand_int(0, len(def.music_64)), MUSIC_PLAYLIST_64);
+			break;
+
+		case GAME_WIPEOUT:
+		default:
+			sfx_music_play(rand_int(0, len(def.music)), MUSIC_PLAYLIST_WIPEOUT);
+			break;
+	}
+
+	sfx_music_mode(SFX_MUSIC_RANDOM);
+}
+
 void race_init(void) {
 	map_init();
 	ingame_menus_load();
@@ -35,6 +54,8 @@ void race_init(void) {
 	const circuit_settings_t *cs = &def.circuits[g.circuit].settings[g.race_class];
 	track_load(cs->path);
 	scene_load(cs->path, cs->sky_y_offset);
+
+	race_start_music();
 	
 	if (g.circuit == CIRCUIT_SILVERSTREAM && g.race_class == RACE_CLASS_RAPIER) {
 		scene_init_aurora_borealis();	
