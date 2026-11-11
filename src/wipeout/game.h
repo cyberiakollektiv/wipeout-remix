@@ -12,6 +12,8 @@
 #define NUM_PILOTS_PER_TEAM 2
 #define NUM_NON_BONUS_CIRCUITS 6
 #define NUM_MUSIC_TRACKS 11
+#define NUM_MUSIC_TRACKS_XL 14
+#define NUM_MUSIC_TRACKS_3 13
 #define NUM_MUSIC_TRACKS_64 10
 #define NUM_HIGHSCORES 5
 
@@ -223,8 +225,8 @@ typedef struct {
 	int ship_model_to_pilot[NUM_PILOTS];
 	int race_points_for_rank[NUM_PILOTS];
 	music_track_t music[NUM_MUSIC_TRACKS];
-	music_track_xl_t music_xl[NUM_MUSIC_TRACKS];
-	music_track_3_t music_3[NUM_MUSIC_TRACKS];
+	music_track_xl_t music_xl[NUM_MUSIC_TRACKS_XL];
+	music_track_3_t music_3[NUM_MUSIC_TRACKS_3];
 	music_track_64_t music_64[NUM_MUSIC_TRACKS_64];
 	char *credits[104];
 	struct {
