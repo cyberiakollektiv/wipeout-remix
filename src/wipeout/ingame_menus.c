@@ -165,7 +165,7 @@ menu_t *pause_menu_init(void) {
 	menu_page_add_button(page, 0, "CONTINUE", button_continue);
 	menu_page_add_button(page, 0, "RESTART", button_restart);
 	menu_page_add_button(page, 0, "QUIT", button_quit);
-	menu_page_add_button(page, 0, "MUSIC", button_music);
+	menu_page_add_button(page, 0, "MUSIC", button_music_select_menu);
 	return ingame_menu;
 }
 
