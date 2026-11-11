@@ -22,12 +22,12 @@ def main():
     if not check_dependencies():
         return
 
-    print("Starting Wipeout XL soundtrack conversion")
+    print("Starting Wipeout 3 soundtrack conversion")
 
     output_index = 1
 
     for i in range(2, 13):
-        bin_name = f"WipEout XL (Track {i:02d}).bin"
+        bin_name = f"Wipeout 3 (Track {i:02d}).bin"
         bin_path = Path(bin_name)
 
         if bin_path.exists():
