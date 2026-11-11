@@ -87,8 +87,8 @@ static void button_music_random_64(menu_t *menu, int data) {
 	sfx_music_mode(SFX_MUSIC_RANDOM);
 }
 
-static void button_music_random_2097(menu_t *menu, int data) {
-	sfx_music_play(rand_int(0, len(def.music_2097)));
+static void button_music_random_2(menu_t *menu, int data) {
+	sfx_music_play(rand_int(0, len(def.music_2)));
 	sfx_music_mode(SFX_MUSIC_RANDOM);
 }
 
@@ -106,15 +106,14 @@ static void button_music_2(menu_t *menu, int data) {
 	menu_page_t *page = menu_push(menu, "WIPEOUT 2097", NULL);
 
 	for (int i = 0; i < len(def.music); i++) {
-		menu_page_add_button(page, i, def.music_2097[i].name, button_music_track_2097);
+		menu_page_add_button(page, i, def.music_2[i].name, button_music_track_2097);
 	}
-	menu_page_add_button(page, 1, "RANDOM", button_music_random_2097);
+	menu_page_add_button(page, 1, "RANDOM", button_music_random_2);
 }
 
 static void button_music_random(menu_t *menu, int data) {
 	sfx_music_play(rand_int(0, len(def.music)));
 	sfx_music_mode(SFX_MUSIC_RANDOM);
-
 }
 
 static void button_music_3(menu_t *menu, int data) {
@@ -132,7 +131,7 @@ static void button_music_64(menu_t *menu, int data) {
 	for (int i = 0; i < len(def.music); i++) {
 		menu_page_add_button(page, i, def.music_64[i].name, button_music_track_64);
 	}
-	menu_page_add_button(page, 1, "RANDOM", button_music_random_2097);
+	menu_page_add_button(page, 1, "RANDOM", button_music_random_64);
 }
 
 static void button_music(menu_t *menu, int data) {
@@ -142,10 +141,6 @@ static void button_music(menu_t *menu, int data) {
 		menu_page_add_button(page, i, def.music[i].name, button_music_track);
 	}
 	menu_page_add_button(page, 0, "RANDOM", button_music_random);
-}
-
-static void button_music_xbox(menu_t *menu, int data) {
-	menu_page_t *page = menu_push(menu, "XBOX", NULL);
 }
 
 static void button_music_select_menu(menu_t *menu, int data) {
@@ -168,8 +163,6 @@ menu_t *pause_menu_init(void) {
 	menu_page_add_button(page, 0, "MUSIC", button_music_select_menu);
 	return ingame_menu;
 }
-
-
 
 // -----------------------------------------------------------------------------
 // Game Over
