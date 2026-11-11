@@ -380,7 +380,7 @@ const game_def_t def = {
 		{.path = "wipeout/music/track10.qoa", .name = "CHEMICAL BEATS"},
 		{.path = "wipeout/music/track11.qoa", .name = "WIPEOUT"},
 	},
-	.music_2 = {
+	.music_xl = {
 		{.path = "wipeout2/music/track01.qoa", .name = "WE HAVE EXPLOSIVE"},
 		{.path = "wipeout2/music/track02.qoa", .name = "ATOM BOMB"},
 		{.path = "wipeout2/music/track03.qoa", .name = "LOOPS OF FURY"},
