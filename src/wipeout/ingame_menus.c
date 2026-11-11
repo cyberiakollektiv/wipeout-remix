@@ -88,7 +88,7 @@ static void button_music_random_64(menu_t *menu, int data) {
 }
 
 static void button_music_random_2(menu_t *menu, int data) {
-	sfx_music_play(rand_int(0, len(def.music_2)));
+	sfx_music_play(rand_int(0, len(def.music_xl)));
 	sfx_music_mode(SFX_MUSIC_RANDOM);
 }
 
@@ -106,7 +106,7 @@ static void button_music_xl(menu_t *menu, int data) {
 	menu_page_t *page = menu_push(menu, "WIPEOUT 2097", NULL);
 
 	for (int i = 0; i < len(def.music); i++) {
-		menu_page_add_button(page, i, def.music_2[i].name, button_music_track_xl);
+		menu_page_add_button(page, i, def.music_xl[i].name, button_music_track_xl);
 	}
 	menu_page_add_button(page, 1, "RANDOM", button_music_random_2);
 }
