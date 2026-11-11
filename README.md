@@ -32,6 +32,8 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [ ] De-spaghettification of the struct-based savegame system via cJSON
 
 # Credits:
+- Phoboslab - wipeout-rewrite + qoaconv
+- Psygnosis - The beloved original Wipeout series developers!
 - Dave Gamble - cJSON (JSON implementation)
 - unofficial-fish - Ship alpha bleed & mine lights fixes
 - Mayo1970 - 2P splitscreen code + vibration code
