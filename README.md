@@ -11,14 +11,14 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Working:
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
 - [x] Modified menu assets for ease of navigation, including bugfixes
-- [x] Wipeout 2097 + 64 track support in single races (requires track data from Wipeout XL/2097 + Wipeout 64)
+- [x] Wipeout XL/2097 + 64 track support in single races (requires track data from Wipeout XL/2097 + Wipeout 64)
+- [x] Wipeout XL/2097 + 3 + 64 soundtrack support (requires converted soundtrack files from Wipeout XL/2097 + Wipeout 64 using qoaconv)
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
 - [x] New camera angles (cockpit view, top-down view) as well as "modern camera" and "classic camera" look modes for the right analog stick / mouse!
 - [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
 - [x] Vibration (thanks Mayo1970!)
 
 # Partially Working:
-- [x] Saturn port + Wipeout 2097 + 3 + 64 soundtrack support (menus are complete but are currently not fully hooked to soundtrack files)
 
 # Planned:
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
