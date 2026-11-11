@@ -289,6 +289,7 @@ typedef struct {
 	// WO2097-style preferences options
 	bool minimap;
 	bool look_style;
+	bool hud_style;
 	bool weapons;
 	bool default_view;
 	bool default_name;
