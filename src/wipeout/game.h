@@ -12,6 +12,7 @@
 #define NUM_PILOTS_PER_TEAM 2
 #define NUM_NON_BONUS_CIRCUITS 6
 #define NUM_MUSIC_TRACKS 11
+#define NUM_MUSIC_TRACKS_64 10
 #define NUM_HIGHSCORES 5
 
 #define NUM_LAPS 3
@@ -224,7 +225,7 @@ typedef struct {
 	music_track_t music[NUM_MUSIC_TRACKS];
 	music_track_2_t music_2097[NUM_MUSIC_TRACKS];
 	music_track_3_t music_3[NUM_MUSIC_TRACKS];
-	music_track_64_t music_64[NUM_MUSIC_TRACKS];
+	music_track_64_t music_64[NUM_MUSIC_TRACKS_64];
 	char *credits[104];
 	struct {
 		char *venom[15];
