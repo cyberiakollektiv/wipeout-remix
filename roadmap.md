@@ -18,6 +18,9 @@ They currently need to be integrated slightly better, the current prototype is t
 ## Renderer
 For modernization efforts, Vulkan and Metal renderers should probably be written for newer operating systems.
 
+## SDL1 support
+Despite this being an engine modernization effort, it would be nice to be able to compile an SDL1 version with all of the additional changes made, for players on older devices who want the QoL modifications.
+
 ## Audio
 - [ ] Eventually implement basic reverb when there are more than 4 track faces.
 
