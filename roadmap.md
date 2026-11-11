@@ -13,7 +13,7 @@ The current build has the following new camera options:
 - [x] Top-down (shows the track from a top-down perspective)
 - [x] Modern look with right-analog stick
 
-They currently need to be integrated slightly better, the current prototype is that right-stick looks around like a more "modern" video game, and holding back on the right-stick shows the behind view, and the regular camera button cycles between external view, cockpit view, internal view and top down view. Currently there are no menu options for any of these camera options, which should be rectified (RS should be bound to a menu toggle for "classic look" and "modern look")
+They currently need to be integrated slightly better, the current prototype is that right-stick looks around like a more "modern" video game, and holding back on the right-stick shows the behind view, and the regular camera button cycles between external view, cockpit view, internal view and top down view.
 
 ## Renderer
 For modernization efforts, Vulkan and Metal renderers should probably be written for newer operating systems.
@@ -23,7 +23,9 @@ For modernization efforts, Vulkan and Metal renderers should probably be written
 
 ## Minimap
 - [x] Basic minimap support has been added into race.c via map.c and map.h. It's not pretty, but it works perfectly and uses pilot icons from pilot.cmp. It needs better positioning, slightly better integration with UI/resolution scaling, and ideally, better emblem icons with transparent backgrounds.
-- [x] Proof of concept minimap test on a dual-screen device such as a (3)DS or a Wii U.
+- [ ] Proof of concept minimap test on a dual-screen device such as a (3)DS or a Wii U.
 
 ## 2097 / 64 Support
-There's already a ton of code referencing 2097 and 64 that's not currently used anywhere. Once the bulk of the main fixes are made, I'll look into integrating support for 2097 and 64 tracks (not as ports of their own games, but selectable tracks in wipeout-rewrite's wipEout 1 engine). Currently, 2097 and 3 soundtracks are supported as long as you port each soundtrack file to .QOA and place it in the "wipeout2097" and "wipeout3" folders under "music". 
+- [x] Currently supports 2097 / 64 tracks AND soundtrack files if installed in adjacent "wipeout2" and "wipeout64" folders. Wipeout 3 soundtrack's soundtrack is also supported if converted to .qoa (but the track files are completely different as WO1 + 2097/XL share an engine and WO3 doesn't). Soundtracks are automatically matched to the launched circuit's game type, ie; Wipeout 2097/XL maps will automatically play 2097/XL songs unless manually changed. 
+- [x] Wipeout 3 soundtrack's soundtrack is also supported if converted to .qoa (but the race circuit files are completely different as WO1 + 2097/XL share an engine and WO3 doesn't).
+- [ ] 2097/XL weapon and HUD support may be added at some point down the line.
