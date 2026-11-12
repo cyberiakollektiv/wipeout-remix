@@ -210,6 +210,9 @@ void input_set_button_state(button_t button, float state) {
 	}
 }
 
+void input_set_gyro_data(float x, float y, float z) {
+}
+
 void input_set_mouse_pos(int32_t x, int32_t y) {
 	mouse_x = x;
 	mouse_y = y;
