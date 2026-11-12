@@ -67,6 +67,9 @@ SDL_Gamepad *platform_find_gamepad(void) {
         for (int i = 0; i < num_joysticks; i++) {
             if (SDL_IsGamepad(joysticks[i])) {
                 SDL_Gamepad *gp = SDL_OpenGamepad(joysticks[i]);
+                if (gp && SDL_GamepadHasSensor(gp, SDL_SENSOR_GYRO)) {
+                    SDL_SetGamepadSensorEnabled(gp, SDL_SENSOR_GYRO, true);
+                }
                 SDL_free(joysticks);
                 return gp;
             }
@@ -120,11 +123,33 @@ void platform_pump_events(void) {
         // Gamepads connect/disconnect
         else if (ev.type == SDL_EVENT_GAMEPAD_ADDED) {
             gamepad = SDL_OpenGamepad(ev.gdevice.which);
-        }
+            if (gamepad && SDL_GamepadHasSensor(gamepad, SDL_SENSOR_GYRO)) {
+            SDL_SetGamepadSensorEnabled(gamepad, SDL_SENSOR_GYRO, true);
+    }
+}
         else if (ev.type == SDL_EVENT_GAMEPAD_REMOVED) {
             if (gamepad && ev.gdevice.which == SDL_GetGamepadID(gamepad)) {
                 SDL_CloseGamepad(gamepad);
                 gamepad = platform_find_gamepad();
+            }
+        }
+
+        // Input Gyro
+
+        else if (ev.type == SDL_EVENT_GAMEPAD_SENSOR_UPDATE) {
+            if (ev.gsensor.sensor == SDL_SENSOR_GYRO) {
+                
+                float gyro_x = ev.gsensor.data[0];
+                float gyro_y = ev.gsensor.data[1];
+                float gyro_z = ev.gsensor.data[2];
+
+                input_set_gyro_data(gyro_x, gyro_y, gyro_z);
+
+            }
+            else if (ev.gsensor.sensor == SDL_SENSOR_ACCEL) {
+                float accel_x = ev.gsensor.data[0];
+                float accel_y = ev.gsensor.data[1];
+                float accel_z = ev.gsensor.data[2];
             }
         }
 
@@ -439,7 +464,7 @@ uint32_t platform_store_userdata(const char *name, void *bytes, int32_t len) {
 #endif
 
 int main(int argc, char *argv[]) {
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_SENSOR)) {
         printf("Failed to initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
