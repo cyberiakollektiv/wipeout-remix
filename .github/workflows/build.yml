@@ -17,34 +17,23 @@ jobs:
           - os: ubuntu-latest
             arch: x64
             renderer: GL
-            artifact_name: wipegame-linux-x64-opengl
+            artifact_name: wipegame-linux-x64-opengl-vr
             binary_name: wipegame
           - os: ubuntu-latest
             arch: x64
             renderer: VK
-            artifact_name: wipegame-linux-x64-vulkan
-            binary_name: wipegame
-
-          - os: ubuntu-24.04-arm
-            arch: arm64
-            renderer: GL
-            artifact_name: wipegame-linux-arm64-opengl
-            binary_name: wipegame
-          - os: ubuntu-24.04-arm
-            arch: arm64
-            renderer: VK
-            artifact_name: wipegame-linux-arm64-vulkan
+            artifact_name: wipegame-linux-x64-vulkan-vr
             binary_name: wipegame
 
           - os: windows-latest
             arch: x64
             renderer: GL
-            artifact_name: wipegame-windows-opengl
+            artifact_name: wipegame-windows-opengl-vr
             binary_name: wipegame.exe
           - os: windows-latest
             arch: x64
             renderer: VK
-            artifact_name: wipegame-windows-vulkan
+            artifact_name: wipegame-windows-vulkan-vr
             binary_name: wipegame.exe
 
           - os: macos-latest
@@ -52,28 +41,12 @@ jobs:
             renderer: GL
             artifact_name: wipegame-macos-arm64-opengl
             binary_name: wipegame
-          - os: macos-latest
-            arch: arm64
-            renderer: MTL
-            artifact_name: wipegame-macos-arm64-metal
-            binary_name: wipegame
-
-          - os: macos-13
-            arch: x64
-            renderer: GL
-            artifact_name: wipegame-macos-x64-opengl
-            binary_name: wipegame
-          - os: macos-13
-            arch: x64
-            renderer: MTL
-            artifact_name: wipegame-macos-x64-metal
-            binary_name: wipegame
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Linux system dependencies
+      - name: Install Linux system dependencies & OpenXR Loader
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -83,9 +56,11 @@ jobs:
             libgl1-mesa-dev \
             libglew-dev \
             libvulkan-dev \
-            vulkan-tools
+            vulkan-tools \
+            libopenxr-dev \
+            openxr-loader
 
-      - name: Setup MSYS2 (Windows)
+      - name: Setup MSYS2 (Windows) & Install OpenXR Packages
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
@@ -97,11 +72,7 @@ jobs:
             mingw-w64-x86_64-pkg-config
             mingw-w64-x86_64-glew
             mingw-w64-x86_64-vulkan-devel
-
-      - name: Install macOS dependencies
-        if: runner.os == 'macOS'
-        run: |
-          brew install glew
+            mingw-w64-x86_64-openxr
 
       - name: Setup SDL3 from source
         uses: libsdl-org/setup-sdl@main
@@ -113,28 +84,26 @@ jobs:
       - name: Build with Makefile (Unix)
         if: runner.os != 'Windows'
         run: |
-          # Expose compiled SDL3 to pkg-config
           export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
           
           make clean
-          make sdl3 RENDERER=${{ matrix.renderer }} -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
+          make sdl3 RENDERER=${{ matrix.renderer }} OPENXR=1 -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
 
       - name: Build with Makefile (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          # Convert Windows path to MSYS path format for pkg-config
           SDL_PREFIX=$(cygpath -u "${{ steps.sdl.outputs.prefix }}")
           export PKG_CONFIG_PATH="$SDL_PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
           
           make clean
-          make sdl3 RENDERER=${{ matrix.renderer }} -j$(nproc)
+          make sdl3 RENDERER=${{ matrix.renderer }} OPENXR=1 -j$(nproc)
 
       - name: Rename binary
         shell: bash
         run: |
           TARGET_BIN="${{ matrix.binary_name }}"
-          OUTPUT_BIN="wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}"
+          OUTPUT_BIN="wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}-vr"
           if [ -f "$TARGET_BIN" ]; then
             mv "$TARGET_BIN" "$OUTPUT_BIN"
           elif [ -f "wipegame" ]; then
@@ -147,4 +116,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}*
+          path: wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}-vr*
