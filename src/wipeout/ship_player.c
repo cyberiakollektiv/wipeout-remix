@@ -252,6 +252,7 @@ void ship_player_update_race(ship_t *self) {
 
 	if (save.steering_method == 2) {
         float gyro_yaw = input_get_button_state(INPUT_GAMEPAD_GYRO_Y); 
+		float gyro_sensitivity = 2.0f;
         self->angular_velocity.y += gyro_yaw * gyro_sensitivity * system_tick();
     }
 
