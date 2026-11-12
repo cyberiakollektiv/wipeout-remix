@@ -484,7 +484,7 @@ static void page_options_vr_init(menu_t *menu) {
 	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
 
 	menu_page_add_toggle(page, save.vr_steering_mode, "STEERING MODE", opts_vr_steering_mode, len(opts_vr_steering_mode), toggle_vr_steering_mode);
-	menu_page_add_toggle(page, save.vr_steering_mode, "RENDER RESOLUTION", opts_vr_render_resolution, len(opts_vr_render_resolution), toggle_vr_steering_mode);
+	menu_page_add_toggle(page, save.vr_steering_mode, "RENDER RESOLUTION", opts_vr_render_resolution, len(opts_vr_render_resolution), toggle_vr_render_resolution);
 	menu_page_add_toggle(page, save.vr_comfort_vignette, "COMFORT VIGNETTE", opts_comfort_vignette, len(opts_comfort_vignette), toggle_vr_comfort_vignette);
 	menu_page_add_toggle(page, save.vr_horizon_lock, "HORIZON LOCK", opts_horizon_lock, len(opts_horizon_lock), toggle_vr_horizon_lock);
 	menu_page_add_toggle(page, save.vr_hud_mode, "HUD DISPLAY", opts_vr_hud, len(opts_vr_hud), toggle_vr_hud_mode);
