@@ -639,6 +639,7 @@ save_t save = {
 	.fullscreen = false,
 	.screen_res = 0,
 	.post_effect = 0,
+	.texture_filter = 0,
 
 	// New preferences options
 	.minimap = 0, // False disables minimap
