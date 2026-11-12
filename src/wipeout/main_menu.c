@@ -194,9 +194,15 @@ static void toggle_default_name(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_steering_method(menu_t *menu, int data) {
+	save.steering_method = data;
+	save.is_dirty = true;
+}
+
 static const char *opts_minimap[] = {"OFF", "ON"};
 static const char *opts_weapons[] = {"OFF", "ON", "ON (XL)"};
 static const char *opts_look_style[] = {"DEFAULT", "CLASSIC", "MODERN"};
+static const char *opts_steering_method[] = {"DEFAULT", "GYRO"};
 static const char *opts_hud_style[] = {"WIPEOUT", "XL", "64"};
 static const char *opts_camera_invert_x[] = {"DEFAULT", "INVERTED"};
 static const char *opts_camera_invert_y[] = {"DEFAULT", "INVERTED"};
@@ -214,6 +220,7 @@ static void page_options_preferences_init(menu_t *menu) {
 
 	menu_page_add_toggle(page, save.minimap, "MINIMAP", opts_minimap, len(opts_minimap), toggle_minimap);
 	menu_page_add_toggle(page, save.hud_style, "HUD STYLE", opts_hud_style, len(opts_hud_style), toggle_hud_style);
+	menu_page_add_toggle(page, save.steering_method, "STEERING METHOD", opts_steering_method, len(opts_steering_method), toggle_steering_method);
 	menu_page_add_toggle(page, save.look_style, "LOOK STYLE", opts_look_style, len(opts_look_style), toggle_look_style);
 	menu_page_add_toggle(page, save.camera_invert_x, "HORIZONTAL AXIS", opts_camera_invert_x, len(opts_camera_invert_x), toggle_camera_invert_x);
 	menu_page_add_toggle(page, save.camera_invert_y, "VERTICAL AXIS", opts_camera_invert_y, len(opts_camera_invert_y), toggle_camera_invert_y);
