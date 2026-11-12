@@ -199,9 +199,15 @@ static void toggle_steering_method(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_collision_type(menu_t *menu, int data) {
+	save.collision_type = data;
+	save.is_dirty = true;
+}
+
 static const char *opts_minimap[] = {"OFF", "ON"};
 static const char *opts_weapons[] = {"OFF", "ON", "ON (XL)"};
 static const char *opts_look_style[] = {"DEFAULT", "CLASSIC", "MODERN"};
+static const char *opts_collision_type[] = {"DEFAULT", "MODERN", "LEGACY"};
 static const char *opts_steering_method[] = {"DPAD", "ANALOG", "GYRO"};
 static const char *opts_hud_style[] = {"WIPEOUT", "XL", "64"};
 static const char *opts_camera_invert_x[] = {"DEFAULT", "INVERTED"};
@@ -225,6 +231,7 @@ static void page_options_preferences_init(menu_t *menu) {
 	menu_page_add_toggle(page, save.camera_invert_x, "HORIZONTAL AXIS", opts_camera_invert_x, len(opts_camera_invert_x), toggle_camera_invert_x);
 	menu_page_add_toggle(page, save.camera_invert_y, "VERTICAL AXIS", opts_camera_invert_y, len(opts_camera_invert_y), toggle_camera_invert_y);
 	menu_page_add_toggle(page, save.weapons, "WEAPONS", opts_weapons, len(opts_weapons), toggle_weapons);
+	menu_page_add_toggle(page, save.collision_type, "COLLISION TYPE", opts_collision_type, len(opts_collision_type), toggle_collision_type);
 	menu_page_add_toggle(page, save.default_view, "DEFAULT VIEW", opts_default_view, len(opts_default_view), toggle_default_view);
 	menu_page_add_toggle(page, save.default_name, "DEFAULT NAME", opts_default_name, len(opts_default_name), toggle_default_name);
 
