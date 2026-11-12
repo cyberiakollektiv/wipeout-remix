@@ -310,8 +310,8 @@ typedef struct {
 
 	// WO2097-style preferences options
 	bool minimap;
-	bool look_style;
-	bool hud_style;
+	int look_style;
+	int hud_style;
 	bool weapons;
 	bool default_view;
 	int default_name;
@@ -321,6 +321,13 @@ typedef struct {
 	bool rightstick_toggle;
 	bool camera_invert_x;
 	bool camera_invert_y;
+
+	// VR options
+	bool vr_steering_mode;
+	int vr_render_resolution;
+	int vr_horizon_lock;
+	int vr_hud_mode;
+	int vr_world_scale;
 
 	uint32_t has_rapier_class;
 	uint32_t has_bonus_circuits;
