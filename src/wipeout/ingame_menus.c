@@ -493,7 +493,29 @@ static void page_hall_of_fame_init(menu_t *menu) {
 	page->title_pos = vec2i(0, -100);
 
 	hs_new_entry.time = g.race_time;
-	strncpy(hs_new_entry.name, save.highscores_name, 4);
+//	strncpy(hs_new_entry.name, save.highscores_name, 4);
+
+	strncpy(hs_new_entry.name, save.default_name, 4);
+
+	if (save.default_name) {
+    strncpy(
+        hs_new_entry.name,
+        def.pilots[g.pilot].name,
+        sizeof(hs_new_entry.name) - 1
+    );
+
+    hs_new_entry.name[sizeof(hs_new_entry.name) - 1] = '\0';
+}
+else {
+    strncpy(
+        hs_new_entry.name,
+        save.highscores_name,
+        sizeof(hs_new_entry.name) - 1
+    );
+
+    hs_new_entry.name[sizeof(hs_new_entry.name) - 1] = '\0';
+}
+	
 	hs_char_index = 0;
 	hs_entry_complete = false;
 }
