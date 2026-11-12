@@ -650,7 +650,6 @@ save_t save = {
 
 	// New controller options
 	.vibration_toggle = true,
-	.rightstick_toggle = true,
 	.camera_invert_x = false,
 	.camera_invert_y = false,
 
