@@ -196,7 +196,7 @@ static void toggle_default_name(menu_t *menu, int data) {
 
 static const char *opts_minimap[] = {"OFF", "ON"};
 static const char *opts_weapons[] = {"OFF", "ON", "ON (XL)"};
-static const char *opts_look_style[] = {"CLASSIC", "MODERN"};
+static const char *opts_look_style[] = {"DEFAULT", "CLASSIC", "MODERN"};
 static const char *opts_hud_style[] = {"WIPEOUT", "XL", "64"};
 static const char *opts_camera_invert_x[] = {"DEFAULT", "INVERTED"};
 static const char *opts_camera_invert_y[] = {"DEFAULT", "INVERTED"};
