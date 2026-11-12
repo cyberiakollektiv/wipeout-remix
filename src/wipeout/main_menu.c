@@ -81,7 +81,7 @@ static void page_main_draw(menu_t *menu, int data) {
 }
 
 static void page_main_init(menu_t *menu) {
-	menu_page_t *page = menu_push(menu, "WIPEOUT REWORKED", page_main_draw);
+	menu_page_t *page = menu_push(menu, "WIPEOUT REMIX", page_main_draw);
 	flags_add(page->layout_flags, MENU_FIXED);
 	page->title_pos = vec2i(0, 30);
 	page->title_anchor = UI_POS_TOP | UI_POS_CENTER;
