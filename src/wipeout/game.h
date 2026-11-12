@@ -312,8 +312,8 @@ typedef struct {
 	bool minimap;
 	int look_style;
 	int hud_style;
-	bool weapons;
-	bool default_view;
+	int weapons;
+	int default_view;
 	int default_name;
 
 	// Modern controller options
