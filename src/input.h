@@ -172,7 +172,6 @@ void input_unbind_all(input_layer_t layer);
 uint8_t input_bound_to_action(button_t button);
 
 void input_set_button_state(button_t button, float state);
-float input_get_button_state(button_t button);
 void input_set_gyro_data(float x, float y, float z);
 void input_set_mouse_pos(int32_t x, int32_t y);
 void input_textinput(int32_t ascii_char);
