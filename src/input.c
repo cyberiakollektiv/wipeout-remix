@@ -210,6 +210,10 @@ void input_set_button_state(button_t button, float state) {
 	}
 }
 
+float input_get_button_state(button_t button) {
+    return button_states[button]; 
+}
+
 void input_set_gyro_data(float x, float y, float z) {
     input_set_button_state(INPUT_GAMEPAD_GYRO_X, x);
     input_set_button_state(INPUT_GAMEPAD_GYRO_Y, y);
