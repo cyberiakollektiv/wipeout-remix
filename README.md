@@ -1,4 +1,4 @@
-# wipEout rEmixed
+# wipEout rEmix
 A revamped & modernized wipeout-rewrite engine in SDL3 with additional QoL features such as vibration, modern camera controls, console-specific game menus, and more.
 
 ## Why SDL3?
