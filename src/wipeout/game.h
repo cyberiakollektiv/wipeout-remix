@@ -323,7 +323,7 @@ typedef struct {
 	int weapons;
 	int default_view;
 	int default_name;
-	bool steering_method;
+	int steering_method;
 
 	// Modern controller options
 	bool vibration_toggle;
