@@ -648,6 +648,7 @@ save_t save = {
 	.weapons = 1, // Enable / disable weapons in races
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
 	.default_name = 0, // Default player name
+	.steering_method = 0, // Default steering method
 
 	// New controller options
 	.vibration_toggle = true,
