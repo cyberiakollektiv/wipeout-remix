@@ -148,7 +148,7 @@ void ship_player_update_intro_general(ship_t *self) {
     static void (*last_camera_func)(camera_t *, ship_t *, droid_t *) = camera_update_race_external;
 
     // View - Right Stick - Modern
-    if (save.look_style = 2) {
+    if (save.look_style == 2) {
         if (input_state(A_LOOKLEFT)) {
             if (g.camera.update_func != camera_update_race_look_left &&
                 g.camera.update_func != camera_update_race_look_right &&
@@ -340,7 +340,7 @@ void ship_player_update_race(ship_t *self) {
     static void (*last_camera_func)(camera_t *, ship_t *, droid_t *) = camera_update_race_external;
 
     // View - Right Stick - Modern
-    if (save.look_style = 2) {
+    if (save.look_style == 2) {
         if (input_state(A_LOOKLEFT)) {
             if (g.camera.update_func != camera_update_race_look_left &&
                 g.camera.update_func != camera_update_race_look_right &&
