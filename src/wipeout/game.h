@@ -324,6 +324,7 @@ typedef struct {
 
 	// VR options
 	bool vr_steering_mode;
+	int vr_comfort_vignette;
 	int vr_render_resolution;
 	int vr_horizon_lock;
 	int vr_hud_mode;
