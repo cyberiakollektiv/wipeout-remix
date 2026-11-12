@@ -16,13 +16,13 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
 - [x] New camera angles (cockpit view, top-down view) as well as "modern camera" and "classic camera" look modes for the right analog stick / mouse!
 - [x] Minimap for those hard-to-memorize courses (looking at you, Silverstream)
-- [x] Vibration (thanks Mayo1970!)
 
 # Partially Working:
+- [x] Wipeout 2097/XL style "Preferences" menu with options such as default camera mode, default name, weapons on/off, etc)
+- [x] Vibration (thanks Mayo1970!)
 
 # Planned:
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
-- [ ] Add WO2 style "Preferences" menu with options such as default camera mode, default name, weapons on/off, etc)
 - [ ] WO2-style HUD if game files are installed(?)
 - [ ] FOV change during speed boost
 - [ ] Demo builds(?)
