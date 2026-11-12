@@ -1,4 +1,4 @@
-name: Build wipeout-reworked (Multiplatform - SDL3)
+name: Build wipeout-reworked (Multiplatform - SDL3 + OpenXR)
 
 on:
   push:
@@ -17,29 +17,56 @@ jobs:
           - os: ubuntu-latest
             arch: x64
             renderer: GL
-            artifact_name: wipegame-linux-x64-opengl-vr
+            artifact_name: wipegame-linux-x64-opengl
             binary_name: wipegame
           - os: ubuntu-latest
             arch: x64
             renderer: VK
-            artifact_name: wipegame-linux-x64-vulkan-vr
+            artifact_name: wipegame-linux-x64-vulkan
+            binary_name: wipegame
+
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            renderer: GL
+            artifact_name: wipegame-linux-arm64-opengl
+            binary_name: wipegame
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            renderer: VK
+            artifact_name: wipegame-linux-arm64-vulkan
             binary_name: wipegame
 
           - os: windows-latest
             arch: x64
             renderer: GL
-            artifact_name: wipegame-windows-opengl-vr
+            artifact_name: wipegame-windows-opengl
             binary_name: wipegame.exe
           - os: windows-latest
             arch: x64
             renderer: VK
-            artifact_name: wipegame-windows-vulkan-vr
+            artifact_name: wipegame-windows-vulkan
             binary_name: wipegame.exe
 
           - os: macos-latest
             arch: arm64
             renderer: GL
             artifact_name: wipegame-macos-arm64-opengl
+            binary_name: wipegame
+          - os: macos-latest
+            arch: arm64
+            renderer: MTL
+            artifact_name: wipegame-macos-arm64-metal
+            binary_name: wipegame
+
+          - os: macos-13
+            arch: x64
+            renderer: GL
+            artifact_name: wipegame-macos-x64-opengl
+            binary_name: wipegame
+          - os: macos-13
+            arch: x64
+            renderer: MTL
+            artifact_name: wipegame-macos-x64-metal
             binary_name: wipegame
 
     steps:
@@ -74,6 +101,11 @@ jobs:
             mingw-w64-x86_64-vulkan-devel
             mingw-w64-x86_64-openxr
 
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install glew
+
       - name: Setup SDL3 from source
         uses: libsdl-org/setup-sdl@main
         id: sdl
@@ -103,7 +135,7 @@ jobs:
         shell: bash
         run: |
           TARGET_BIN="${{ matrix.binary_name }}"
-          OUTPUT_BIN="wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}-vr"
+          OUTPUT_BIN="wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}"
           if [ -f "$TARGET_BIN" ]; then
             mv "$TARGET_BIN" "$OUTPUT_BIN"
           elif [ -f "wipegame" ]; then
@@ -116,4 +148,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}-vr*
+          path: wipegame-${{ matrix.renderer }}-${{ matrix.os }}-${{ matrix.arch }}*
