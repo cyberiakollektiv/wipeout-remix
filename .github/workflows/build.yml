@@ -1,4 +1,4 @@
-name: Build wipeout-reworked (Multiplatform - SDL3 + OpenXR)
+name: Build wipeout-reworked (Multiplatform - SDL3)
 
 on:
   push:
@@ -73,7 +73,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Linux system dependencies & OpenXR Loader
+      - name: Install Linux system dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -83,11 +83,9 @@ jobs:
             libgl1-mesa-dev \
             libglew-dev \
             libvulkan-dev \
-            vulkan-tools \
-            libopenxr-dev \
-            libopenxr-loader1
+            vulkan-tools
 
-      - name: Setup MSYS2 (Windows) & Install OpenXR Packages
+      - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
@@ -99,7 +97,6 @@ jobs:
             mingw-w64-x86_64-pkg-config
             mingw-w64-x86_64-glew
             mingw-w64-x86_64-vulkan-devel
-            mingw-w64-x86_64-openxr
 
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
@@ -116,20 +113,22 @@ jobs:
       - name: Build with Makefile (Unix)
         if: runner.os != 'Windows'
         run: |
+          # Expose compiled SDL3 to pkg-config
           export PKG_CONFIG_PATH="${{ steps.sdl.outputs.prefix }}/lib/pkgconfig:$PKG_CONFIG_PATH"
           
           make clean
-          make sdl3 RENDERER=${{ matrix.renderer }} OPENXR=1 -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
+          make sdl3 RENDERER=${{ matrix.renderer }} -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
 
       - name: Build with Makefile (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
+          # Convert Windows path to MSYS path format for pkg-config
           SDL_PREFIX=$(cygpath -u "${{ steps.sdl.outputs.prefix }}")
           export PKG_CONFIG_PATH="$SDL_PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
           
           make clean
-          make sdl3 RENDERER=${{ matrix.renderer }} OPENXR=1 -j$(nproc)
+          make sdl3 RENDERER=${{ matrix.renderer }} -j$(nproc)
 
       - name: Rename binary
         shell: bash
