@@ -324,6 +324,7 @@ typedef struct {
 	int default_view;
 	int default_name;
 	int steering_method;
+	int collision_type;
 
 	// Modern controller options
 	bool vibration_toggle;
