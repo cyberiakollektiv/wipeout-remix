@@ -20,6 +20,7 @@ static void page_circuit_init(menu_t *menu);
 static void page_options_preferences_init(menu_t *menu);
 static void page_options_controls_init(menu_t *menu);
 static void page_options_video_init(menu_t *menu);
+static void page_options_vr_init(menu_t *menu);
 static void page_options_audio_init(menu_t *menu);
 static void page_options_highscores_init(menu_t *menu);
 
@@ -112,6 +113,10 @@ static void button_video(menu_t *menu, int data) {
 	page_options_video_init(menu);
 }
 
+static void button_vr(menu_t *menu, int data) {
+	page_options_vr_init(menu);
+}
+
 static void button_audio(menu_t *menu, int data) {
 	page_options_audio_init(menu);
 }
@@ -125,8 +130,9 @@ static void page_options_draw(menu_t *menu, int data) {
 		case 0: draw_model(models.controller, vec2(0, -0.1), vec3(0, 0, -6000), system_cycle_time()); break;
 		case 1: draw_model(models.rescue, vec2(0, -0.2), vec3(0, 0, -700), system_cycle_time()); break; // TODO: needs better model
 		case 2: draw_model(models.rescue, vec2(0, -0.2), vec3(0, 0, -700), system_cycle_time()); break; // TODO: needs better model
-		case 3: draw_model(models.options.headphones, vec2(0, -0.2), vec3(0, 0, -300), system_cycle_time()); break;
-		case 4: draw_model(models.options.stopwatch, vec2(0, -0.2), vec3(0, 0, -400), system_cycle_time()); break;
+		case 3: draw_model(models.rescue, vec2(0, -0.2), vec3(0, 0, -700), system_cycle_time()); break; // TODO: needs better model
+		case 4: draw_model(models.options.headphones, vec2(0, -0.2), vec3(0, 0, -300), system_cycle_time()); break;
+		case 5: draw_model(models.options.stopwatch, vec2(0, -0.2), vec3(0, 0, -400), system_cycle_time()); break;
 	}
 }
 
@@ -140,8 +146,9 @@ static void page_options_init(menu_t *menu) {
 	menu_page_add_button(page, 0, "CONTROLS", button_controls);
 	menu_page_add_button(page, 1, "PREFERENCES", button_preferences);
 	menu_page_add_button(page, 2, "VIDEO", button_video);
-	menu_page_add_button(page, 3, "AUDIO", button_audio);
-	menu_page_add_button(page, 4, "BEST TIMES", button_highscores);
+	menu_page_add_button(page, 3, "VIRTUAL REALITY", button_vr);
+	menu_page_add_button(page, 4, "AUDIO", button_audio);
+	menu_page_add_button(page, 5, "BEST TIMES", button_highscores);
 }
 
 // -----------------------------------------------------------------------------
@@ -425,6 +432,63 @@ static void page_options_video_init(menu_t *menu) {
 	menu_page_add_toggle(page, save.draw_stats, "DRAW STATS", opts_draw_stats, len(opts_draw_stats), toggle_draw_stats);
 	menu_page_add_toggle(page, save.screen_res, "SCREEN RESOLUTION", opts_res, len(opts_res), toggle_res);
 	menu_page_add_toggle(page, save.post_effect, "POST PROCESSING", opts_post, len(opts_post), toggle_post);
+}
+
+// -----------------------------------------------------------------------------
+// Options VR
+
+static void toggle_vr_steering_mode(menu_t *menu, int data) {
+	save.vr_steering_mode = data;
+	save.is_dirty = true;
+}
+
+static void toggle_vr_render_resolution(menu_t *menu, int data) {
+	save.vr_render_resolution = data;
+	save.is_dirty = true;
+}
+
+static void toggle_vr_comfort_vignette(menu_t *menu, int data) {
+	save.vr_comfort_vignette = data;
+	save.is_dirty = true;
+}
+
+static void toggle_vr_horizon_lock(menu_t *menu, int data) {
+	save.vr_horizon_lock = data;
+	save.is_dirty = true;
+}
+
+static void toggle_vr_hud_mode(menu_t *menu, int data) {
+	save.vr_hud_mode = data;
+	save.is_dirty = true;
+}
+
+static void toggle_vr_world_scale(menu_t *menu, int data) {
+	save.vr_world_scale = data;
+	save.is_dirty = true;
+}
+
+static const char *opts_vr_steering_mode[] = {"VR CONTROLLER", "STANDARD CONTROLLER"};
+static const char *opts_vr_render_resolution[] = {"NATIVE", "0.5", "0.75", "1.0", "1.25", "1.50", "1.75", "2.0"}; // Fix later
+static const char *opts_comfort_vignette[] = {"DISABLED", "MILD", "AGGRESSIVE"};
+static const char *opts_horizon_lock[] = {"FULL 1:1", "DAMPED", "LOCKED"};
+static const char *opts_vr_hud[] = {"COCKPIT MESH", "HEAD-LOCKED", "FLOATING"};
+static const char *opts_vr_scale[]	= {"0.8X", "0.9X", "1.0X", "1.1X", "1.2X"};
+
+static void page_options_vr_init(menu_t *menu) {
+	menu_page_t *page = menu_push(menu, "VR OPTIONS", NULL);
+	flags_set(page->layout_flags, MENU_VERTICAL | MENU_FIXED);
+	page->title_pos = vec2i(-160, -100);
+	page->title_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
+	page->items_pos = vec2i(-160, -60);
+	page->block_width = 320;
+	page->items_anchor = UI_POS_MIDDLE | UI_POS_CENTER;
+
+	menu_page_add_toggle(page, save.vr_steering_mode, "STEERING MODE", opts_vr_steering_mode, len(opts_vr_steering_mode), toggle_vr_steering_mode);
+	menu_page_add_toggle(page, save.vr_steering_mode, "RENDER RESOLUTION", opts_vr_render_resolution, len(opts_vr_render_resolution), toggle_vr_steering_mode);
+	menu_page_add_toggle(page, save.vr_comfort_vignette, "COMFORT VIGNETTE", opts_comfort_vignette, len(opts_comfort_vignette), toggle_vr_comfort_vignette);
+	menu_page_add_toggle(page, save.vr_horizon_lock, "HORIZON LOCK", opts_horizon_lock, len(opts_horizon_lock), toggle_vr_horizon_lock);
+	menu_page_add_toggle(page, save.vr_hud_mode, "HUD DISPLAY", opts_vr_hud, len(opts_vr_hud), toggle_vr_hud_mode);
+	menu_page_add_toggle(page, save.vr_world_scale, "WORLD SCALE", opts_vr_scale, len(opts_vr_scale), toggle_vr_world_scale);
 }
 
 // -----------------------------------------------------------------------------
