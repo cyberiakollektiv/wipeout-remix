@@ -138,18 +138,11 @@ void platform_pump_events(void) {
 
         else if (ev.type == SDL_EVENT_GAMEPAD_SENSOR_UPDATE) {
             if (ev.gsensor.sensor == SDL_SENSOR_GYRO) {
-                
-                float gyro_x = ev.gsensor.data[0];
-                float gyro_y = ev.gsensor.data[1];
-                float gyro_z = ev.gsensor.data[2];
-
-                input_set_gyro_data(gyro_x, gyro_y, gyro_z);
-
-            }
-            else if (ev.gsensor.sensor == SDL_SENSOR_ACCEL) {
-                float accel_x = ev.gsensor.data[0];
-                float accel_y = ev.gsensor.data[1];
-                float accel_z = ev.gsensor.data[2];
+                input_set_gyro_data(
+                    ev.gsensor.data[0], 
+                    ev.gsensor.data[1], 
+                    ev.gsensor.data[2]
+                );
             }
         }
 
