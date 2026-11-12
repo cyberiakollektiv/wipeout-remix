@@ -146,7 +146,7 @@ static void page_options_init(menu_t *menu) {
 	menu_page_add_button(page, 0, "CONTROLS", button_controls);
 	menu_page_add_button(page, 1, "PREFERENCES", button_preferences);
 	menu_page_add_button(page, 2, "VIDEO", button_video);
-	menu_page_add_button(page, 3, "VIRTUAL REALITY", button_vr);
+	menu_page_add_button(page, 3, "VIRTUAL REALITY", button_vr); // TODO: Only show this when "-vr" is passed to wipegame
 	menu_page_add_button(page, 4, "AUDIO", button_audio);
 	menu_page_add_button(page, 5, "BEST TIMES", button_highscores);
 }
