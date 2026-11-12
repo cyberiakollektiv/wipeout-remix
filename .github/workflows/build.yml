@@ -85,7 +85,7 @@ jobs:
             libvulkan-dev \
             vulkan-tools \
             libopenxr-dev \
-            openxr-loader
+            libopenxr-loader1
 
       - name: Setup MSYS2 (Windows) & Install OpenXR Packages
         if: runner.os == 'Windows'
