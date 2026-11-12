@@ -646,7 +646,7 @@ save_t save = {
 	.hud_style = 0, // False enables "classic look"
 	.weapons = true, // Enable / disable weapons in races
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
-	.default_name = "ART", // Default player name
+	.default_name = 1, // Default player name
 
 	// New controller options
 	.vibration_toggle = true,
