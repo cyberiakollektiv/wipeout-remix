@@ -31,6 +31,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [ ] Vulkan/Metal renderers
 - [ ] VR headset support via SDL3 + OpenXR (with "VR steering" and "controller steering" modes so it can be played with full or partial VR setups)
 - [ ] De-spaghettification of the struct-based savegame system via cJSON
+- [ ] .OBJ to .PRM conversion utility for custom assets
 
 # Credits:
 - Phoboslab - wipeout-rewrite + qoaconv
