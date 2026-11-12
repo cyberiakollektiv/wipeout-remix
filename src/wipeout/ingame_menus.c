@@ -493,9 +493,9 @@ static void page_hall_of_fame_init(menu_t *menu) {
 	page->title_pos = vec2i(0, -100);
 
 	hs_new_entry.time = g.race_time;
-//	strncpy(hs_new_entry.name, save.highscores_name, 4);
+	strncpy(hs_new_entry.name, save.highscores_name, 4);
 
-	strncpy(hs_new_entry.name, save.default_name, 4);
+//	strncpy(hs_new_entry.name, save.default_name);
 
 	if (save.default_name) {
     strncpy(
