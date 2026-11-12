@@ -251,12 +251,10 @@ void ship_player_update_race(ship_t *self) {
 	}
 
 	if (save.steering_method == 2) {
-        float gyro_yaw = input_state(INPUT_GAMEPAD_GYRO_Y);
-        
-        float gyro_sensitivity = 2.0f; // Adjust to taste
-        self->angular_acceleration.y += gyro_yaw * gyro_sensitivity;
+        float gyro_yaw = input_get_button_state(INPUT_GAMEPAD_GYRO_Y); 
+        self->angular_velocity.y += gyro_yaw * gyro_sensitivity * system_tick();
     }
-	
+
 	if (flags_is(self->flags, SHIP_ELECTROED)) {
 		self->ebolt_effect_timer += system_tick();
 
