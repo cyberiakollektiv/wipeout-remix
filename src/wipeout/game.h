@@ -314,8 +314,7 @@ typedef struct {
 	bool hud_style;
 	bool weapons;
 	bool default_view;
-// 	bool default_name;
-	char default_name[4];
+	int default_name;
 
 	// Modern controller options
 	bool vibration_toggle;
