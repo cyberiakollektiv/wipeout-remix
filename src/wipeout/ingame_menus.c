@@ -169,6 +169,7 @@ static void button_music_select_menu(menu_t *menu, int data) {
 	menu_page_add_button(page, 1, "WIPEOUT XL", button_music_xl);
 	menu_page_add_button(page, 2, "WIPEOUT 64", button_music_64);
 	menu_page_add_button(page, 3, "WIPEOUT 3", button_music_3);
+//	menu_page_add_button(page, 3, "CUSTOM", button_music_custom);
 }
 
 menu_t *pause_menu_init(void) {
