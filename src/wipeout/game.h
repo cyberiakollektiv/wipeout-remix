@@ -314,6 +314,7 @@ typedef struct {
 	int screen_res;
 	int post_effect;
 	float screen_shake;
+	int texture_filter;
 
 	// WO2097-style preferences options
 	bool minimap;
