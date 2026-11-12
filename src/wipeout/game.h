@@ -234,7 +234,7 @@ typedef struct {
 	music_track_xl_t music_xl[NUM_MUSIC_TRACKS_XL];
 	music_track_3_t music_3[NUM_MUSIC_TRACKS_3];
 	music_track_64_t music_64[NUM_MUSIC_TRACKS_64];
-	music_track_custom_t music_64[NUM_MUSIC_TRACKS_CUSTOM];
+	music_track_custom_t music_custom[NUM_MUSIC_TRACKS_CUSTOM];
 	char *credits[104];
 	struct {
 		char *venom[15];
