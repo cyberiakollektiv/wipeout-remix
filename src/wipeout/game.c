@@ -649,6 +649,7 @@ save_t save = {
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
 	.default_name = 0, // Default player name
 	.steering_method = 0, // Default steering method
+	.collision_type = 0, // Default collision method
 
 	// New controller options
 	.vibration_toggle = true,
