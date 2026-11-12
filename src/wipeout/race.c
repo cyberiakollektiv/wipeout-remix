@@ -146,7 +146,7 @@ void race_update(void) {
 
 	if (flags_is(g.ships[g.pilot].flags, SHIP_RACING)) {
 		hud_draw(&g.ships[g.pilot]);
-		if (save.minimap = 1) {
+		if (save.minimap == 1) {
 			map_draw(&g.track, g.ships, len(g.ships), g.pilot);
 		}
 	}
