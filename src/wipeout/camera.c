@@ -219,6 +219,15 @@ void camera_update_attract_internal(camera_t *camera, ship_t *ship, droid_t *dro
 	camera->angle = vec3_mul(ship->angle, vec3(1,1,0)); // No roll
 }
 
+// Same code, but for in-game cockpit view so attract mode doesn't engage.
+void camera_update_race_cockpit(camera_t *camera, ship_t *ship, droid_t *droid) {
+
+	camera->section = ship->section;
+	camera->position = ship_cockpit(ship);
+	camera->angle = vec3_mul(ship->angle, vec3(1,1,0)); // No roll
+}
+
+
 void camera_update_static_follow(camera_t *camera, ship_t *ship, droid_t *droid) {
 	if (camera->update_timer <= 0) {
 		camera->update_func = camera_update_attract_random;
