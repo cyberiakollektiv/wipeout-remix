@@ -406,6 +406,11 @@ static void toggle_screen_shake(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
+static void toggle_texture_filter(menu_t *menu, int data) {
+	save.texture_filter = data;
+	save.is_dirty = true;
+}
+
 static const char *opts_off_on[] = {"OFF", "ON"};
 static const char *opts_roll[] = {"0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
 static const char *opts_ui_sizes[] = {"AUTO", "1X", "2X", "3X", "4X"};
@@ -413,6 +418,7 @@ static const char *opts_draw_stats[] = {"OFF", "FPS", "DEBUG"};
 static const char *opts_res[] = {"NATIVE", "240P", "480P"};
 static const char *opts_post[] = {"NONE", "CRT EFFECT"};
 static const char *opts_screen_shake[] = {"DISABLED", "REDUCED", "FULL"};
+static const char *opts_texture_filter[] = {"LINEAR", "BILINEAR", "TRILINEAR", "ANISOTROPIC 2X", "ANISOTROPIC 4X"};
 
 static void page_options_video_init(menu_t *menu) {
 	menu_page_t *page = menu_push(menu, "VIDEO OPTIONS", NULL);
@@ -431,6 +437,7 @@ static void page_options_video_init(menu_t *menu) {
 	menu_page_add_toggle(page, save.ui_scale, "UI SCALE", opts_ui_sizes, len(opts_ui_sizes), toggle_ui_scale);
 	menu_page_add_toggle(page, save.draw_stats, "DRAW STATS", opts_draw_stats, len(opts_draw_stats), toggle_draw_stats);
 	menu_page_add_toggle(page, save.screen_res, "SCREEN RESOLUTION", opts_res, len(opts_res), toggle_res);
+	menu_page_add_toggle(page, save.texture_filter, "TEXTURE FILTERING", opts_texture_filter, len(opts_texture_filter), toggle_texture_filter);
 	menu_page_add_toggle(page, save.post_effect, "POST PROCESSING", opts_post, len(opts_post), toggle_post);
 }
 
