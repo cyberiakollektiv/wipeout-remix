@@ -24,6 +24,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Planned:
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
 - [ ] WO2-style HUD if game files are installed(?)
+- [ ] Additional texture filtering options
 - [ ] FOV change during speed boost
 - [ ] Demo builds(?)
 - [ ] Custom soundtrack support
