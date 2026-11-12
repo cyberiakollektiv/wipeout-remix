@@ -81,7 +81,8 @@ typedef enum {
 	MUSIC_PLAYLIST_WIPEOUT,
 	MUSIC_PLAYLIST_XL,
 	MUSIC_PLAYLIST_3,
-	MUSIC_PLAYLIST_64
+	MUSIC_PLAYLIST_64,
+	MUSIC_PLAYLIST_CUSTOM
 } music_playlist_t;
 
 void sfx_music_next(void);
