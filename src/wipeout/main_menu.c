@@ -467,11 +467,11 @@ static void toggle_vr_world_scale(menu_t *menu, int data) {
 	save.is_dirty = true;
 }
 
-static const char *opts_vr_steering_mode[] = {"VR CONTROLLER", "STANDARD CONTROLLER"};
+static const char *opts_vr_steering_mode[] = {"VR", "GAMEPAD"};
 static const char *opts_vr_render_resolution[] = {"NATIVE", "0.5", "0.75", "1.0", "1.25", "1.50", "1.75", "2.0"}; // Fix later
 static const char *opts_comfort_vignette[] = {"DISABLED", "MILD", "AGGRESSIVE"};
-static const char *opts_horizon_lock[] = {"FULL 1:1", "DAMPED", "LOCKED"};
-static const char *opts_vr_hud[] = {"COCKPIT MESH", "HEAD-LOCKED", "FLOATING"};
+static const char *opts_horizon_lock[] = {"FULL", "DAMPED", "LOCKED"};
+static const char *opts_vr_hud[] = {"COCKPIT MESH", "HEADLOCKED", "FLOATING"};
 static const char *opts_vr_scale[]	= {"0.8X", "0.9X", "1.0X", "1.1X", "1.2X"};
 
 static void page_options_vr_init(menu_t *menu) {
