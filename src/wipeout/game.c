@@ -641,7 +641,7 @@ save_t save = {
 	.post_effect = 0,
 
 	// New preferences options
-	.minimap = true, // False disables minimap
+	.minimap = 0, // False disables minimap
 	.look_style = 0, // False enables "classic look"
 	.hud_style = 0, // False enables "classic look"
 	.weapons = 1, // Enable / disable weapons in races
