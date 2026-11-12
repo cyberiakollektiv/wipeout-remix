@@ -15,6 +15,7 @@
 #define NUM_MUSIC_TRACKS_XL 14
 #define NUM_MUSIC_TRACKS_3 13
 #define NUM_MUSIC_TRACKS_64 10
+#define NUM_MUSIC_TRACKS_CUSTOM 10
 #define NUM_HIGHSCORES 5
 
 #define NUM_LAPS 3
@@ -216,6 +217,11 @@ typedef struct {
 } music_track_64_t;
 
 typedef struct {
+	char *path;
+	char *name;
+} music_track_custom_t;
+
+typedef struct {
 	race_class_t race_classes[NUM_RACE_CLASSES];
 	race_type_t race_types[NUM_RACE_TYPES];
 	pilot_t pilots[NUM_PILOTS];
@@ -228,6 +234,7 @@ typedef struct {
 	music_track_xl_t music_xl[NUM_MUSIC_TRACKS_XL];
 	music_track_3_t music_3[NUM_MUSIC_TRACKS_3];
 	music_track_64_t music_64[NUM_MUSIC_TRACKS_64];
+	music_track_custom_t music_64[NUM_MUSIC_TRACKS_CUSTOM];
 	char *credits[104];
 	struct {
 		char *venom[15];
