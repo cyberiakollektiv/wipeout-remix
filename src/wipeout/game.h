@@ -318,7 +318,6 @@ typedef struct {
 
 	// Modern controller options
 	bool vibration_toggle;
-	bool rightstick_toggle;
 	bool camera_invert_x;
 	bool camera_invert_y;
 
