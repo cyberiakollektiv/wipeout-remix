@@ -250,12 +250,28 @@ void ship_player_update_race(ship_t *self) {
 		}
 	}
 
-//	if (save.steering_method == 2) {
-//        float gyro_yaw = input_get_button_state(INPUT_GAMEPAD_GYRO_Y); 
-//		float gyro_sensitivity = 2.0f;
-//        self->angular_velocity.y += gyro_yaw * gyro_sensitivity * system_tick();
-//    }
 
+	if (save.steering_method == 2) {
+    gyro_state_t gyro = input_get_gyro_data();
+
+    float gyro_yaw = gyro.y;
+
+    const float deadzone = 0.04f;
+
+    if (fabsf(gyro_yaw) < deadzone) {
+        gyro_yaw = 0.0f;
+    } else {
+        gyro_yaw -= copysignf(deadzone, gyro_yaw);
+    }
+
+    const float gyro_sensitivity = 2.0f;
+
+    float gyro_steering = gyro_yaw * gyro_sensitivity;
+
+    self->angular_acceleration.y += gyro_steering;
+	}
+
+	
 	if (flags_is(self->flags, SHIP_ELECTROED)) {
 		self->ebolt_effect_timer += system_tick();
 
