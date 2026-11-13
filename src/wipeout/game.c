@@ -639,16 +639,16 @@ save_t save = {
 	.fullscreen = false,
 	.screen_res = 0,
 	.post_effect = 0,
-	.texture_filter = 0,
+	.texture_filter = 1, // On by default, turn off for more pixelated textures.
 
 	// New preferences options
-	.minimap = 0, // False disables minimap
-	.look_style = 0, // False enables "classic look"
-	.hud_style = 0, // False enables "classic look"
+	.minimap = 0, // True enables minimap
+	.look_style = 0, // 0 is default look style (aka none), 1 enables "Classic Look" (look to the left/right/rear of ship) and 2 enables "Modern Look" (RS L/R looks left/right like a modern racing game)
+	.hud_style = 0, // 0 is original Wipeout, 1 is 2097/XP, 2 is 64.
 	.weapons = 1, // Enable / disable weapons in races
 	.default_view = 1, // Default view modes (INTERNAL, EXTERNAL, COCKPIT, TOP-DOWN)"
 	.default_name = 0, // Default player name
-	.steering_method = 0, // Default steering method
+	.steering_method = 0, // Default steering method (0 is D-Pad, 1 is Analog, 2 is Gyro)
 	.collision_type = 0, // Default collision method
 
 	// New controller options
@@ -656,8 +656,8 @@ save_t save = {
 	.camera_invert_x = false,
 	.camera_invert_y = false,
 
-	.has_rapier_class = true,  // for testing; should be false in prod
-	.has_bonus_circuits = true, // for testing; should be false in prod
+	.has_rapier_class = false,  // for testing; should be false in prod
+	.has_bonus_circuits = false, // for testing; should be false in prod
 
 	.buttons = {
 		[A_UP] = {INPUT_KEY_UP, INPUT_GAMEPAD_DPAD_UP},
