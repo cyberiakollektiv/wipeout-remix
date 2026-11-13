@@ -20,6 +20,11 @@ typedef enum {
 	NUM_RENDER_POST_EFFECTS,
 } render_post_effect_t;
 
+typedef enum {
+    RENDER_TEXTURE_FILTER_NEAREST,
+    RENDER_TEXTURE_FILTER_LINEAR
+} render_texture_filter_t;
+
 typedef struct {
 	uint32_t num_tris;
 	uint32_t num_draw_calls;
@@ -38,6 +43,7 @@ void render_cleanup(void);
 void render_set_screen_size(vec2i_t size);
 void render_set_resolution(render_resolution_t res);
 void render_set_post_effect(render_post_effect_t post);
+void render_set_texture_filter(render_texture_filter_t filter);
 vec2i_t render_size(void);
 
 void render_frame_prepare(void);
