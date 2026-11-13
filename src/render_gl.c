@@ -386,6 +386,34 @@ static render_stats_t end_stats = {0};
 
 static void render_flush(void);
 
+// Texture filtering preference.
+static render_texture_filter_t current_texture_filter =
+    RENDER_TEXTURE_FILTER_LINEAR;
+
+void render_set_texture_filter(render_texture_filter_t filter) {
+    render_flush();
+
+    current_texture_filter = filter;
+
+    glBindTexture(GL_TEXTURE_2D, atlas_texture);
+
+    if (filter == RENDER_TEXTURE_FILTER_NEAREST) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+#if RENDER_USE_MIPMAPS
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+#else
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#endif
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+#if RENDER_USE_MIPMAPS
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+#else
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#endif
+    }
+}
+
 
 // static void gl_message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
 // 	puts(message);
@@ -556,16 +584,9 @@ void render_set_resolution(render_resolution_t res) {
 	projection_mat_2d = render_setup_2d_projection_mat(backbuffer_size);
 	projection_mat_3d = render_setup_3d_projection_mat(backbuffer_size);
 
+    render_set_texture_filter(current_texture_filter);
 
-	// Use nearest texture min filter for 240p and 480p
-	glBindTexture(GL_TEXTURE_2D, atlas_texture);
-	if (res == RENDER_RES_NATIVE) {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, RENDER_USE_MIPMAPS ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-	}
-	else {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
-	glViewport(0, 0, backbuffer_size.x, backbuffer_size.y);
+    glViewport(0, 0, backbuffer_size.x, backbuffer_size.y);
 }
 
 void render_set_post_effect(render_post_effect_t post) {
