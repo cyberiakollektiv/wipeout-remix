@@ -159,6 +159,8 @@ static void *capture_user;
 static int32_t mouse_x;
 static int32_t mouse_y;
 
+static gyro_state_t gyro_state;
+
 void input_init(void) {
 	input_unbind_all(INPUT_LAYER_SYSTEM);
 	input_unbind_all(INPUT_LAYER_USER);
@@ -211,11 +213,14 @@ void input_set_button_state(button_t button, float state) {
 }
 
 void input_set_gyro_data(float x, float y, float z) {
-    input_set_button_state(INPUT_GAMEPAD_GYRO_X, x);
-    input_set_button_state(INPUT_GAMEPAD_GYRO_Y, y);
-    input_set_button_state(INPUT_GAMEPAD_GYRO_Z, z);
+	gyro_state.x = x;
+	gyro_state.y = y;
+	gyro_state.z = z;
 }
 
+gyro_state_t input_get_gyro_data(void) {
+	return gyro_state;
+}
 void input_set_mouse_pos(int32_t x, int32_t y) {
 	mouse_x = x;
 	mouse_y = y;
