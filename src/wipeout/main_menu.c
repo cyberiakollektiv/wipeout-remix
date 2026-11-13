@@ -432,7 +432,7 @@ static const char *opts_draw_stats[] = {"OFF", "FPS", "DEBUG"};
 static const char *opts_res[] = {"NATIVE", "240P", "480P"};
 static const char *opts_post[] = {"NONE", "CRT EFFECT"};
 static const char *opts_screen_shake[] = {"DISABLED", "REDUCED", "FULL"};
-static const char *opts_texture_filter[] = {"NEAREST", "LINEAR"};
+static const char *opts_texture_filter[] = {"OFF", "ON"};
 
 static void page_options_video_init(menu_t *menu) {
 	menu_page_t *page = menu_push(menu, "VIDEO OPTIONS", NULL);
