@@ -26,6 +26,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Planned:
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
 - [ ] WO2-style HUD if game files are installed(?)
+- [ ] WO3 track conversion utility(?)
 - [ ] FOV change during speed boost
 - [ ] Demo builds(?)
 - [ ] Custom soundtrack support
@@ -36,11 +37,13 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 - [ ] .OBJ to .PRM conversion utility for custom assets
 
 # Credits:
-- Phoboslab - wipeout-rewrite + qoaconv
 - Psygnosis - The beloved original Wipeout series developers!
+- Phoboslab - wipeout-rewrite + qoaconv
 - Dave Gamble - cJSON (JSON implementation)
 - unofficial-fish - Ship alpha bleed & mine lights fixes
 - Mayo1970 - 2P splitscreen code + vibration code
+
+PRs and bugfixes are encouraged and always welcome! I can't promise every change will be merged, but if it seems like a reasonable modernization, give it a shot!
 
 Original README below.
 
