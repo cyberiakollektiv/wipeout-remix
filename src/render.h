@@ -21,8 +21,8 @@ typedef enum {
 } render_post_effect_t;
 
 typedef enum {
-    RENDER_TEXTURE_FILTER_NEAREST,
-    RENDER_TEXTURE_FILTER_LINEAR
+    RENDER_TEXTURE_FILTER_NEAREST = 0,
+    RENDER_TEXTURE_FILTER_LINEAR = 1
 } render_texture_filter_t;
 
 typedef struct {
