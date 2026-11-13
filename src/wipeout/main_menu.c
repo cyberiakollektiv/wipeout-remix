@@ -34,7 +34,7 @@ static struct {
 	Object *pilots[8];
 	struct { Object *stopwatch, *save, *load, *headphones, *cd; } options;
 	struct { Object *championship, *msdos, *single_race, *options; } misc;
-	struct { Object *pc, *ps, *xbox, *wii, *nx, *wiiu, *vr, *psp, *3ds, *vita; } platform_console; // Platform-specific console models
+	struct { Object *pc, *ps, *xbox, *wii, *nx, *wiiu, *vr, *psp, *ctr, *vita; } platform_console; // Platform-specific console models
 	struct { Object *keyboard, *ps_ctl, *xbox_ctl, *wii_ctl, *nx_ctl, *wiiu; } platform_controller; // Platform-specific controller models
 	Object *rescue;
 	Object *controller;
