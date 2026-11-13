@@ -29,7 +29,7 @@
 #include "render.h"
 #include "mem.h"
 #include "utils.h"
-
+#include "wipeout/game.h"
 
 #define ATLAS_SIZE 64
 #define ATLAS_GRID 32
@@ -584,7 +584,7 @@ void render_set_resolution(render_resolution_t res) {
 	projection_mat_2d = render_setup_2d_projection_mat(backbuffer_size);
 	projection_mat_3d = render_setup_3d_projection_mat(backbuffer_size);
 
-    render_set_texture_filter(current_texture_filter);
+    render_set_texture_filter(save.texture_filter);
 
     glViewport(0, 0, backbuffer_size.x, backbuffer_size.y);
 }
