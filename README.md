@@ -11,6 +11,7 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Working:
 - [x] Modernized SDL3 backend which handles window rendering, audio, and input (controller + keyboard/mouse)
 - [x] Modified menu assets for ease of navigation, including bugfixes
+- [x] Texture filtering options (off for classic pixelated textures, on for smoother textures)
 - [x] Wipeout XL/2097 + 64 track support in single races (requires track data from Wipeout XL/2097 + Wipeout 64)
 - [x] Wipeout XL/2097 + 3 + 64 soundtrack support (requires converted soundtrack files from Wipeout XL/2097 + Wipeout 64 using qoaconv)
 - [x] Ship alpha bleed and mine light fixes from mainline PRs (everything looks smooth and stable now!)
@@ -20,12 +21,11 @@ Originally this started as a modification of wipeout-rewrite for wipEoutX, an Xb
 # Partially Working:
 - [x] Wipeout 2097/XL style "Preferences" menu with options such as default camera mode, default name, weapons on/off, etc)
 - [x] Vibration (thanks Mayo1970!)
+- [x] Gyro steering (implemented but untested)
 
 # Planned:
 - [ ] 2-4 player splitscreen (2P support is ready in Mayo1970's fork, just need to merge those changes into mainline)
-- [ ] Gyro steering
 - [ ] WO2-style HUD if game files are installed(?)
-- [ ] Additional texture filtering options
 - [ ] FOV change during speed boost
 - [ ] Demo builds(?)
 - [ ] Custom soundtrack support
